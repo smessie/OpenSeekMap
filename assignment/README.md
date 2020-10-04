@@ -36,12 +36,12 @@ selecteren dan de beste *totale matches* uit alle gevonden *totale
 matches* voor alle mogelijke opsplitsingen. Wat "beste" hier precies
 betekent zien we later.
 
-Voor een opgesplitste zoekopdracht z=z_1... z_n, zoek je elk stuk
-(z_i) afzonderlijk op. Voor elk stuk z_i maak je een verzameling
-M_i van plaatsen in de databank met een editeerafstand van ten hoogste
+Voor een opgesplitste zoekopdracht $z=z_1... z_n$, zoek je elk stuk
+($z_i$) afzonderlijk op. Voor elk stuk $z_i$ maak je een verzameling
+$M_i$ van plaatsen in de databank met een editeerafstand van ten hoogste
 $\min(3,1+|z_i|/3)$. Hiervoor gebruik je onder andere Shift-AND. Een
 *totale match* V voor een opgesplitste zoekopdracht z met n
-stukken is een opeenvolging v_1... v_n, zodat
+stukken is een opeenvolging $v_1... v_n$, zodat
 $\forall i: v_i\in M_i$.
 
 Je programma moet ook plaatsen kunnen zoeken rond een bepaalde punt.
@@ -137,10 +137,10 @@ Een zoekopdracht kan uit meerdere woorden bestaan, dan komt het er op
 aan om de beste match te vinden die aan zo veel mogelijk woorden
 tegelijk voldoet. Voor elke mogelijke opdeling van de zoekopdracht in
 stukken zoek je benaderende matches voor elk deel. Stel dat de
-zoekopdracht opgesplitst is als w_1 w_2 ... w_n, en dat de
-benaderende matches voor stuk w_i in M_i zitten dan kun je de
+zoekopdracht opgesplitst is als $w_1 w_2 ... w_n$, en dat de
+benaderende matches voor stuk $w_i in M_i$ zitten dan kun je de
 "synergie" $\mathsf{S}(v_1 v_2 ... v_n)$ van een combinatie matches
-v_1 v_2 ... v_n (met $\forall i: v_i \in M_i$) bepalen met:
+$v_1 v_2 ... v_n$ (met $\forall i: v_i \in M_i$) bepalen met:
 
 
 \mathsf{S}_1(v_i,v_j) = \min\left[2,  \left(\frac{\max\left[extent(v_i),extent(v_j))\right]}{d_{geo}(v_i,v_j)}\right)^2 \right]
@@ -176,7 +176,7 @@ het sorteren volgens de onderstaande metriek:
     tussen het meest specifieke element van de match en de meegegeven
     positie.
 
-Waarbij v_s het meest specifieke element (hoogste rang) van de match.
+Waarbij $v_s$ het meest specifieke element (hoogste rang) van de match.
 Er kan op aanvraag afgeweken worden van de sortering in samenspraak met
 de assistent van het vak.
 
