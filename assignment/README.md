@@ -30,8 +30,8 @@ Als je een query hebt van $\bar n$ woorden (gescheiden door spaties),
 kun je die op verschillende manieren in stukken verdelen. Voor "De
 Sterre Gent" heb je bijvoorbeeld \["De", "Sterre", "Gent"\], \["De
 Sterre","Gent"\], \["De", "Sterre Gent"\] en \["De Sterre Gent"\]. Zo
-zijn er $\bar n^2$ opsplitsingen. Voor elk van die opsplitsingen, gaan
-we op zoek naar *totale matches* zoals hieronder beschreven. We
+zijn er $2^{\bar n - 1}$ opsplitsingen. Voor elk van die opsplitsingen,
+gaan we op zoek naar *totale matches* zoals hieronder beschreven. We
 selecteren dan de beste *totale matches* uit alle gevonden *totale
 matches* voor alle mogelijke opsplitsingen. Wat "beste" hier precies
 betekent zien we later.
