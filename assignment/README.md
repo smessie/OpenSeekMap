@@ -311,10 +311,10 @@ Je programma moet dus bijvoorbeeld als volgt gebruikt kunnen worden:
 
 Voor de UTF-8 België
 [belgie.data](https://ufora.ugent.be/d2l/common/dialogs/quickLink/quickLink.d2l?ou=234097&type=content&rcode=5B0748E6-E75C-4A93-8875-E034639B31CD-519535)
-dataset die je kreeg moet een zoekopdracht binnen 15 seconden voltooid
-worden en mag je programma niet meer dan 50MiB geheugen gebruiken. Deze
-limieten zijn zeer ruim gerekend, je implementatie is waarschijnlijk
-niet goed als je er net onder zit.
+dataset die je kreeg moet een zoekopdracht van hoogstens 3 woorden
+binnen 15 seconden voltooid worden en mag je programma niet meer dan
+50MiB geheugen gebruiken. Deze limieten zijn zeer ruim gerekend, je
+implementatie is waarschijnlijk niet goed als je er net onder zit.
 
 Verslag
 -------
