@@ -61,6 +61,7 @@ _deps
 *.i*86
 *.x86_64
 *.hex
+*openseekmap
 
 # Debug files
 *.dSYM/
@@ -85,7 +86,8 @@ dkms.conf
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
