@@ -20,6 +20,7 @@ typedef struct Entry_t {
 
 typedef struct Database_t {
     Entry* head;
+    Entry* tail;
 } Database;
 
 Database* load_database(char* path);

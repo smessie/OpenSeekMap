@@ -21,6 +21,7 @@ Database* load_database(char* path) {
     // Read contents of file
     Database* database = (Database*) malloc(sizeof(Database));
     database->head = NULL;
+    database->tail = NULL;
 
     char line[LINE_SIZE];
     while (fgets(line, sizeof(line), fp) != NULL) {
@@ -65,15 +66,12 @@ Database* load_database(char* path) {
 }
 
 void add_entry(Database* database, Entry* entry) {
-    // TODO: check if having a pointer to the latest entry (tail) improves performance.
-    if (database->head != NULL) {
-        Entry* parent = database->head;
-        while (parent->next != NULL) {
-            parent = parent->next;
-        }
-        parent->next = entry;
+    if (database->tail != NULL) {
+        database->tail->next = entry;
+        database->tail = entry;
     } else {
         database->head = entry;
+        database->tail = entry;
     }
 }
 
