@@ -1,2 +1,2 @@
 echo "Hoi openseekmap
-tweede lijn :D" | ./src/openseekmap "../datasets/belgie-ascii.data"
+tweede lijn :D" | valgrind --trace-children=yes --track-fds=yes --track-origins=yes --leak-check=full --show-leak-kinds=definite,indirect,possible ./src/openseekmap "/Users/ieben/CLionProjects/AD3-Project/datasets/belgie-ascii.data"
