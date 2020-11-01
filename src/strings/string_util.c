@@ -18,3 +18,9 @@ char* normalize_string(char* string) {
     }
     return normalized;
 }
+
+void bitvector_to_string(int bitvector[], int size, char* dest) {
+    for (int i = 0; i < size; i++) {
+        dest[i] = bitvector[i] == 1 ? '1' : '0';
+    }
+}

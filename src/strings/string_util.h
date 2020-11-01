@@ -7,4 +7,6 @@
 
 char* normalize_string(char* string);
 
+void bitvector_to_string(int bitvector[], int size, char* dest);
+
 #endif //AD3_PROJECT_STRING_UTIL_H

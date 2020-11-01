@@ -2,3 +2,4 @@ main.c
 database.c
 strings/accents.c
 strings/string_util.c
+algorithm.c
