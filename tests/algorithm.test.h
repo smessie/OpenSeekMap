@@ -5,7 +5,7 @@
 #ifndef AD3_PROJECT_ALGORITHM_TEST_H
 #define AD3_PROJECT_ALGORITHM_TEST_H
 
-int main();
+void run_algorithm_tests();
 
 void test_characteristic_vectors(int* passed, int* failed);
 

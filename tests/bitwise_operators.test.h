@@ -5,7 +5,7 @@
 #ifndef AD3_PROJECT_BITWISE_OPERATORS_TEST_H
 #define AD3_PROJECT_BITWISE_OPERATORS_TEST_H
 
-int main();
+void run_bitwise_operators_tests();
 
 void test_AND(int* passed, int* failed);
 

@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-int main() {
+void run_bitwise_operators_tests() {
     int passed = 0;
     int failed = 0;
 
@@ -20,7 +20,6 @@ int main() {
     test_shift(&passed, &failed);
 
     printf("Completed bitwise_operators tests with %d passes and %d failures.\n", passed, failed);
-    return 0;
 }
 
 void test_AND(int* passed, int* failed) {

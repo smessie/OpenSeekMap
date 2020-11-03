@@ -10,7 +10,7 @@
 #include "../src/algorithm.h"
 #include "../src/bitwise_operators.h"
 
-int main() {
+void run_algorithm_tests() {
     int passed = 0;
     int failed = 0;
 
@@ -20,7 +20,6 @@ int main() {
     test_shiftAND(&passed, &failed);
 
     printf("Completed algorithm tests with %d passes and %d failures.\n", passed, failed);
-    return 0;
 }
 
 void test_characteristic_vectors(int* passed, int* failed) {
@@ -101,5 +100,12 @@ void test_shiftAND(int* passed, int* failed) {
     } else {
         (*failed)++;
         perror("shiftAND test 3 failed!");
+    }
+
+    if (shiftAND("ans", "ananas") == false) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND test 4 failed!");
     }
 }
