@@ -13,4 +13,6 @@ void test_characteristic_vectors_2(int* passed, int* failed);
 
 void test_shiftAND(int* passed, int* failed);
 
+void test_M(int* passed, int* failed);
+
 #endif //AD3_PROJECT_ALGORITHM_TEST_H

@@ -7,17 +7,23 @@
 
 #include <stdbool.h>
 
-typedef struct characteristic_vector_t {
+typedef struct bitvector_t {
     char key;
     int* value;
-    struct characteristic_vector_t* next;
-} characteristic_vector;
+    struct bitvector_t* next;
+} bitvector;
 
 typedef struct characteristic_vectors_t {
-    characteristic_vector* head;
+    bitvector* head;
     int size;
     int* zeros;
 } characteristic_vectors;
+
+typedef struct M_t {
+    bitvector* head;
+    int m;
+    int n;
+} M;
 
 bool shiftAND(char* z, char* t);
 
@@ -37,6 +43,25 @@ characteristic_vectors* calculate_characteristic_vectors(char* z, int size);
  */
 int* C(characteristic_vectors* cvs, char x);
 
+/**
+ * Free the struct and all its children.
+ * @param cvs - Pointer to the characteristic vectors struct.
+ */
 void free_characteristic_vectors(characteristic_vectors* cvs);
+
+/**
+ * Generate a linked list of all bitvectors which indicates of a (prefix of a) search string matches a substring of a text.
+ * @param z - The search string for which the CVs should be calculated.
+ * @param t - The text to search in.
+ * @param cvs - The characteristic vectors for the search string.
+ * @return a pointer to the linked list matrix M.
+ */
+M* calculate_M(char* z, char* t, characteristic_vectors* cvs);
+
+/**
+ * Free the struct and all its children.
+ * @param matrix - Pointer to the matrix M struct.
+ */
+void free_M(M* matrix);
 
 #endif //AD3_PROJECT_ALGORITHM_H

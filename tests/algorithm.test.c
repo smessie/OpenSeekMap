@@ -9,6 +9,7 @@
 
 #include "../src/algorithm.h"
 #include "../src/bitwise_operators.h"
+#include "../src/strings/string_util.h"
 
 void run_algorithm_tests() {
     int passed = 0;
@@ -18,6 +19,8 @@ void run_algorithm_tests() {
     test_characteristic_vectors_2(&passed, &failed);
 
     test_shiftAND(&passed, &failed);
+
+    test_M(&passed, &failed);
 
     printf("Completed algorithm tests with %d passes and %d failures.\n", passed, failed);
 }
@@ -108,4 +111,59 @@ void test_shiftAND(int* passed, int* failed) {
         (*failed)++;
         perror("shiftAND test 4 failed!");
     }
+}
+
+void test_M(int* passed, int* failed) {
+    int size = 3;
+    characteristic_vectors* cvs = calculate_characteristic_vectors("ana", size);
+    M* matrix = calculate_M("ana", "ananas", cvs);
+    int expected_ana[6][3] = {
+            {1, 0, 0},
+            {0, 1, 0},
+            {1, 0, 1},
+            {0, 1, 0},
+            {1, 0, 1},
+            {0, 0, 0}
+    };
+    bitvector* testing_column_ana = matrix->head;
+    for (int i = 0; i < matrix->n; i++) {
+        if (equal(testing_column_ana->value, expected_ana[i], size) == false) {
+            (*failed)++;
+            perror("M z=ana, t=ananas test failed!");
+            break;
+        }
+        testing_column_ana = testing_column_ana->next;
+    }
+    if (testing_column_ana == NULL) {
+        (*passed)++;
+    }
+    free_M(matrix);
+    free_characteristic_vectors(cvs);
+
+    size = 4;
+    cvs = calculate_characteristic_vectors("bond", size);
+    matrix = calculate_M("bond", "bonbond", cvs);
+    int expected_bond[7][4] = {
+            {1, 0, 0, 0},
+            {0, 1, 0, 0},
+            {0, 0, 1, 0},
+            {1, 0, 0, 0},
+            {0, 1, 0, 0},
+            {0, 0, 1, 0},
+            {0, 0, 0, 1}
+    };
+    bitvector* testing_column_bond = matrix->head;
+    for (int i = 0; i < matrix->n; i++) {
+        if (equal(testing_column_bond->value, expected_bond[i], size) == false) {
+            (*failed)++;
+            perror("M z=bond, t=bonbond test failed!");
+            break;
+        }
+        testing_column_bond = testing_column_bond->next;
+    }
+    if (testing_column_bond == NULL) {
+        (*passed)++;
+    }
+    free_M(matrix);
+    free_characteristic_vectors(cvs);
 }

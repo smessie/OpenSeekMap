@@ -50,7 +50,7 @@ characteristic_vectors* calculate_characteristic_vectors(char* z, int size) {
 
         // Find the characteristic vector which corresponds to the character.
         if (cvs->head == NULL) {
-            cvs->head = (characteristic_vector*) malloc(sizeof(characteristic_vector));
+            cvs->head = (bitvector*) malloc(sizeof(bitvector));
             cvs->head->key = x;
             cvs->head->next = NULL;
 
@@ -58,7 +58,7 @@ characteristic_vectors* calculate_characteristic_vectors(char* z, int size) {
             cvs->head->value = (int*) calloc(size, sizeof(int));
             cvs->head->value[i] = 1;
         } else {
-            characteristic_vector* cv = cvs->head;
+            bitvector* cv = cvs->head;
 
             // If key = x we want to stop because we need to adjust this cv,
             // if next is NULL we want to stop because we need to initialise the next-entry.
@@ -69,7 +69,7 @@ characteristic_vectors* calculate_characteristic_vectors(char* z, int size) {
                 // Set 1-bit on this position i in the characteristic vector.
                 cv->value[i] = 1;
             } else {
-                cv->next = (characteristic_vector*) malloc(sizeof(characteristic_vector));
+                cv->next = (bitvector*) malloc(sizeof(bitvector));
                 cv->next->key = x;
                 cv->next->next = NULL;
 
@@ -83,7 +83,7 @@ characteristic_vectors* calculate_characteristic_vectors(char* z, int size) {
 }
 
 int* C(characteristic_vectors* cvs, char x) {
-    characteristic_vector* cv = cvs->head;
+    bitvector* cv = cvs->head;
     while (cv != NULL && cv->key != x) {
         cv = cv->next;
     }
@@ -98,11 +98,71 @@ void free_characteristic_vectors(characteristic_vectors* cvs) {
         return;
     }
     while (cvs->head != NULL) {
-        characteristic_vector* toBeRemoved = cvs->head;
+        bitvector* toBeRemoved = cvs->head;
         cvs->head = toBeRemoved->next;
         free(toBeRemoved->value);
         free(toBeRemoved);
     }
     free(cvs->zeros);
     free(cvs);
+}
+
+M* calculate_M(char* z, char* t, characteristic_vectors* cvs) {
+    // Initialize variables and struct
+    int length_z = strlen(z);
+    M* matrix = (M*) malloc(sizeof(M));
+    matrix->head = NULL;
+    matrix->m = length_z;
+    matrix->n = strlen(t);
+    int* column = calloc(length_z, sizeof(int));
+
+    if (z[0] == t[0]) {
+        bit(column, length_z - 1, length_z, false);
+    }
+    // Else: column is already full of zeros
+
+    // Write back the resulting column to new alloc.
+    int* write_back_column = calloc(length_z, sizeof(int));
+    for (int i = 0; i < length_z; i++) {
+        write_back_column[i] = column[i];
+    }
+    // Save column to entry in matrix head.
+    bitvector* entry = malloc(sizeof(bitvector));
+    entry->key = t[0];
+    entry->value = write_back_column;
+    entry->next = NULL;
+    matrix->head = entry;
+
+    for (int j = 1; j < matrix->n; j++) {
+        // This is where the magic happens :tada:
+        shift(column, length_z, 1);
+        AND(column, C(cvs, t[j]), column, length_z);
+
+        // Write back the resulting column to new alloc.
+        int* write_back_column = calloc(length_z, sizeof(int));
+        for (int i = 0; i < length_z; i++) {
+            write_back_column[i] = column[i];
+        }
+        // Save column to new entry in previous entry's next.
+        bitvector* new_entry = malloc(sizeof(bitvector));
+        new_entry->key = t[0];
+        new_entry->value = write_back_column;
+        new_entry->next = NULL;
+        entry->next = new_entry;
+        entry = new_entry;
+    }
+    return matrix;
+}
+
+void free_M(M* matrix) {
+    if (matrix == NULL) {
+        return;
+    }
+    while (matrix->head != NULL) {
+        bitvector* toBeRemoved = matrix->head;
+        matrix->head = toBeRemoved->next;
+        free(toBeRemoved->value);
+        free(toBeRemoved);
+    }
+    free(matrix);
 }
