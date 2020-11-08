@@ -22,7 +22,9 @@ void run_algorithm_tests() {
 
     test_M(&passed, &failed);
 
-    printf("Completed algorithm tests with %d passes and %d failures.\n", passed, failed);
+    test_M_i(&passed, &failed);
+
+    printf("\nCompleted algorithm tests with %d passes and %d failures.\n", passed, failed);
 }
 
 void test_characteristic_vectors(int* passed, int* failed) {
@@ -165,5 +167,73 @@ void test_M(int* passed, int* failed) {
         (*passed)++;
     }
     free_M(matrix);
+    free_characteristic_vectors(cvs);
+}
+
+void test_M_i(int* passed, int* failed) {
+    int size = 4;
+    characteristic_vectors* cvs = calculate_characteristic_vectors("dank", size);
+    M* m_0 = calculate_M("dank", "een_dansfeest", cvs);
+    M* m_1 = calculate_M_i("dank", "een_dansfeest", cvs, m_0);
+    int expected_dank[13][4] = {
+            {1, 0, 0, 0}, /* e */
+            {1, 0, 0, 0}, /* e */
+            {1, 0, 0, 0}, /* n */
+            {1, 0, 0, 0}, /* _ */
+            {1, 0, 0, 0}, /* d */
+            {1, 1, 0, 0}, /* a */
+            {1, 0, 1, 0}, /* n */
+            {1, 0, 0, 1}, /* s */
+            {1, 0, 0, 0}, /* f */
+            {1, 0, 0, 0}, /* e */
+            {1, 0, 0, 0}, /* e */
+            {1, 0, 0, 0}, /* s */
+            {1, 0, 0, 0}  /* t */
+    };
+    bitvector* testing_column_dank = m_1->head;
+    for (int i = 0; i < m_1->n; i++) {
+        if (equal(testing_column_dank->value, expected_dank[i], size) == false) {
+            (*failed)++;
+            perror("M z=dank, t=een_dansfeest test failed!");
+            break;
+        }
+        testing_column_dank = testing_column_dank->next;
+    }
+    if (testing_column_dank == NULL) {
+        (*passed)++;
+    }
+    free_M(m_0);
+    free_M(m_1);
+    free_characteristic_vectors(cvs);
+
+    size = 6;
+    cvs = calculate_characteristic_vectors("zoeven", size);
+    m_0 = calculate_M("zoeven", "zoekken", cvs);
+    m_1 = calculate_M_i("zoeven", "zoekken", cvs, m_0);
+    M* m_2 = calculate_M_i("zoeven", "zoekken", cvs, m_1);
+    int expected_zoeven[7][6] = {
+            {1, 0, 0, 0, 0, 0}, /* z */
+            {1, 1, 0, 0, 0, 0}, /* o */
+            {1, 1, 1, 0, 0, 0}, /* e */
+            {1, 1, 0, 1, 0, 0}, /* k */
+            {1, 1, 0, 0, 1, 0}, /* k */
+            {1, 1, 1, 0, 0, 0}, /* e */
+            {1, 1, 0, 0, 0, 0}  /* n */
+    };
+    bitvector* testing_column_zoeven = m_2->head;
+    for (int i = 0; i < m_1->n; i++) {
+        if (equal(testing_column_zoeven->value, expected_zoeven[i], size) == false) {
+            (*failed)++;
+            perror("M z=zoeven, t=zoekken test failed!");
+            break;
+        }
+        testing_column_zoeven = testing_column_zoeven->next;
+    }
+    if (testing_column_zoeven == NULL) {
+        (*passed)++;
+    }
+    free_M(m_0);
+    free_M(m_1);
+    free_M(m_2);
     free_characteristic_vectors(cvs);
 }

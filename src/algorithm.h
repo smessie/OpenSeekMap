@@ -64,4 +64,15 @@ M* calculate_M(char* z, char* t, characteristic_vectors* cvs);
  */
 void free_M(M* matrix);
 
+/**
+ * Generate a linked list of all bitvectors which indicates of a (prefix of a) search string matches a substring of a text **with errors**.
+ * Amount of allowed errors is amount of M_prev + 1.
+ * @param z - The search string for which the CVs should be calculated.
+ * @param t - The text to search in.
+ * @param cvs - The characteristic vectors for the search string.
+ * @param M_prev - Matrix M which contains the values to start from (1 error less).
+ * @return a pointer to the linked list matrix M.
+ */
+M* calculate_M_i(char* z, char* t, characteristic_vectors* cvs, M* M_prev);
+
 #endif //AD3_PROJECT_ALGORITHM_H

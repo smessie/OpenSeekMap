@@ -12,6 +12,12 @@ void AND(int value1[], int value2[], int dest[], int size) {
     }
 }
 
+void OR(int value1[], int value2[], int dest[], int size) {
+    for (int i = 0; i < size; i++) {
+        dest[i] = value1[i] | value2[i];
+    }
+}
+
 bool equal(int bv1[], int bv2[], int size) {
     for (int i = 0; i < size; i++) {
         if (bv1[i] != bv2[i]) {

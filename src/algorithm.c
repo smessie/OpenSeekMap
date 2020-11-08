@@ -166,3 +166,58 @@ void free_M(M* matrix) {
     }
     free(matrix);
 }
+
+M* calculate_M_i(char* z, char* t, characteristic_vectors* cvs, M* M_prev) {
+    // Initialize variables and struct
+    int length_z = strlen(z);
+    M* matrix = (M*) malloc(sizeof(M));
+    matrix->head = NULL;
+    matrix->m = length_z;
+    matrix->n = strlen(t);
+
+    int* temp_shifting_M_minus_1_column = calloc(length_z, sizeof(int));
+    int* column = calloc(length_z, sizeof(int));
+    bit(column, length_z - 1, length_z, false);
+
+    // Write back the resulting column to new alloc.
+    int* write_back_column = calloc(length_z, sizeof(int));
+    for (int i = 0; i < length_z; i++) {
+        write_back_column[i] = column[i];
+    }
+    // Save column to entry in matrix head.
+    bitvector* entry = malloc(sizeof(bitvector));
+    entry->key = t[0];
+    entry->value = write_back_column;
+    entry->next = NULL;
+    matrix->head = entry;
+
+    bitvector* M_minus_1_column = M_prev->head;
+    for (int j = 1; j < matrix->n; j++) {
+        for (int i = 0; i < length_z; i++) {
+            temp_shifting_M_minus_1_column[i] = M_minus_1_column->value[i];
+        }
+        // This is where the magic happens :tada: *take 2*
+        // We are not going to OR with (1,0,...,0) as we already use a SHIFT that inserts a 1.
+        shift(column, length_z, 1);
+        AND(column, C(cvs, t[j]), column, length_z);
+        shift(temp_shifting_M_minus_1_column, length_z, 1);
+        OR(temp_shifting_M_minus_1_column, column, column, length_z);
+
+        // Write back the resulting column to new alloc.
+        int* write_back_column = calloc(length_z, sizeof(int));
+        for (int i = 0; i < length_z; i++) {
+            write_back_column[i] = column[i];
+        }
+        // Save column to new entry in previous entry's next.
+        bitvector* new_entry = malloc(sizeof(bitvector));
+        new_entry->key = t[0];
+        new_entry->value = write_back_column;
+        new_entry->next = NULL;
+        entry->next = new_entry;
+        entry = new_entry;
+
+        // Update dependency variables
+        M_minus_1_column = M_minus_1_column->next;
+    }
+    return matrix;
+}

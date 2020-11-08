@@ -9,6 +9,8 @@
 
 void AND(int value1[], int value2[], int dest[], int size);
 
+void OR(int value1[], int value2[], int dest[], int size);
+
 bool equal(int bv1[], int bv2[], int size);
 
 /**
