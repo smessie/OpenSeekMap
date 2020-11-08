@@ -176,8 +176,14 @@ M* calculate_M_i(char* z, char* t, characteristic_vectors* cvs, M* M_prev) {
     matrix->n = strlen(t);
 
     int* temp_shifting_M_minus_1_column = calloc(length_z, sizeof(int));
+    int* temp_M_minus_1_insert_char_column = calloc(length_z, sizeof(int));
+    int* temp_M_minus_1_delete_char_column = calloc(length_z, sizeof(int));
+
     int* column = calloc(length_z, sizeof(int));
-    bit(column, length_z - 1, length_z, false);
+    for (int i = 0; i < length_z; i++) {
+        column[i] = M_prev->head->value[i];
+    }
+    shift(column, length_z, 1);
 
     // Write back the resulting column to new alloc.
     int* write_back_column = calloc(length_z, sizeof(int));
@@ -195,13 +201,18 @@ M* calculate_M_i(char* z, char* t, characteristic_vectors* cvs, M* M_prev) {
     for (int j = 1; j < matrix->n; j++) {
         for (int i = 0; i < length_z; i++) {
             temp_shifting_M_minus_1_column[i] = M_minus_1_column->value[i];
+            temp_M_minus_1_insert_char_column[i] = M_minus_1_column->next->value[i];
+            temp_M_minus_1_delete_char_column[i] = M_minus_1_column->value[i];
         }
         // This is where the magic happens :tada: *take 2*
         // We are not going to OR with (1,0,...,0) as we already use a SHIFT that inserts a 1.
         shift(column, length_z, 1);
         AND(column, C(cvs, t[j]), column, length_z);
         shift(temp_shifting_M_minus_1_column, length_z, 1);
+        shift(temp_M_minus_1_insert_char_column, length_z, 1);
         OR(temp_shifting_M_minus_1_column, column, column, length_z);
+        OR(temp_M_minus_1_insert_char_column, column, column, length_z);
+        OR(temp_M_minus_1_delete_char_column, column, column, length_z);
 
         // Write back the resulting column to new alloc.
         int* write_back_column = calloc(length_z, sizeof(int));
@@ -219,5 +230,12 @@ M* calculate_M_i(char* z, char* t, characteristic_vectors* cvs, M* M_prev) {
         // Update dependency variables
         M_minus_1_column = M_minus_1_column->next;
     }
+
+    // Clean up our local variables
+    free(temp_shifting_M_minus_1_column);
+    free(temp_M_minus_1_insert_char_column);
+    free(temp_M_minus_1_delete_char_column);
+    free(column);
+
     return matrix;
 }

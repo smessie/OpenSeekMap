@@ -180,10 +180,10 @@ void test_M_i(int* passed, int* failed) {
             {1, 0, 0, 0}, /* e */
             {1, 0, 0, 0}, /* n */
             {1, 0, 0, 0}, /* _ */
-            {1, 0, 0, 0}, /* d */
-            {1, 1, 0, 0}, /* a */
-            {1, 0, 1, 0}, /* n */
-            {1, 0, 0, 1}, /* s */
+            {1, 1, 0, 0}, /* d */
+            {1, 1, 1, 0}, /* a */
+            {1, 1, 1, 1}, /* n */
+            {1, 0, 1, 1}, /* s */
             {1, 0, 0, 0}, /* f */
             {1, 0, 0, 0}, /* e */
             {1, 0, 0, 0}, /* e */
@@ -212,16 +212,16 @@ void test_M_i(int* passed, int* failed) {
     m_1 = calculate_M_i("zoeven", "zoekken", cvs, m_0);
     M* m_2 = calculate_M_i("zoeven", "zoekken", cvs, m_1);
     int expected_zoeven[7][6] = {
-            {1, 0, 0, 0, 0, 0}, /* z */
-            {1, 1, 0, 0, 0, 0}, /* o */
-            {1, 1, 1, 0, 0, 0}, /* e */
-            {1, 1, 0, 1, 0, 0}, /* k */
-            {1, 1, 0, 0, 1, 0}, /* k */
-            {1, 1, 1, 0, 0, 0}, /* e */
-            {1, 1, 0, 0, 0, 0}  /* n */
+            {1, 1, 1, 0, 0, 0}, /* z */
+            {1, 1, 1, 1, 0, 0}, /* o */
+            {1, 1, 1, 1, 1, 0}, /* e */
+            {1, 1, 1, 1, 1, 0}, /* k */
+            {1, 1, 1, 1, 1, 0}, /* k */
+            {1, 1, 1, 0, 1, 0}, /* e */
+            {1, 1, 0, 0, 0, 1}  /* n */
     };
     bitvector* testing_column_zoeven = m_2->head;
-    for (int i = 0; i < m_1->n; i++) {
+    for (int i = 0; i < m_2->n; i++) {
         if (equal(testing_column_zoeven->value, expected_zoeven[i], size) == false) {
             (*failed)++;
             perror("M z=zoeven, t=zoekken test failed!");

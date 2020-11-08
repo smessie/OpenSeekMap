@@ -67,6 +67,10 @@ void free_M(M* matrix);
 /**
  * Generate a linked list of all bitvectors which indicates of a (prefix of a) search string matches a substring of a text **with errors**.
  * Amount of allowed errors is amount of M_prev + 1.
+ *
+ * Implementation started from shiftAND with errors but modified so that it not only takes into account replacing a
+ * character but also adding or deleting a character and switch two characters from place (TODO).
+ *
  * @param z - The search string for which the CVs should be calculated.
  * @param t - The text to search in.
  * @param cvs - The characteristic vectors for the search string.
