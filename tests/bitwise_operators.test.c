@@ -39,11 +39,11 @@ void test_AND(int* passed, int* failed) {
 
 void test_bit(int* passed, int* failed) {
     int size = 8;
-    int bitvector[size];
-    char bitvector_string[size];
-    bit(bitvector, 5, size, false);
+    int bitvector[size+1];
+    char bitvector_string[size+1];
+    bit(bitvector, 5, size, true);
     bitvector_to_string(bitvector, size, bitvector_string);
-    if (strcmp(bitvector_string, "00010000")) {
+    if (strcmp(bitvector_string, "00100000") == 0) {
         (*passed)++;
     } else {
         (*failed)++;
@@ -52,7 +52,7 @@ void test_bit(int* passed, int* failed) {
 
     bit(bitvector, 2, size, true);
     bitvector_to_string(bitvector, size, bitvector_string);
-    if (strcmp(bitvector_string, "00000100")) {
+    if (strcmp(bitvector_string, "00000100") == 0) {
         (*passed)++;
     } else {
         (*failed)++;
@@ -63,9 +63,9 @@ void test_bit(int* passed, int* failed) {
 void test_shift(int* passed, int* failed) {
     int bitvector[] = {1, 0, 0, 1, 0};
     shift(bitvector, 5, 1);
-    char bitvector_string[5];
+    char bitvector_string[5+1];
     bitvector_to_string(bitvector, 5, bitvector_string);
-    if (strcmp(bitvector_string, "00101")) {
+    if (strcmp(bitvector_string, "11001") == 0) {
         (*passed)++;
     } else {
         (*failed)++;
