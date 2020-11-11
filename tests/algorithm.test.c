@@ -24,6 +24,8 @@ void run_algorithm_tests() {
 
     test_M_i(&passed, &failed);
 
+    test_shiftAND_errors(&passed, &failed);
+
     printf("\nCompleted algorithm tests with %d passes and %d failures.\n", passed, failed);
 }
 
@@ -236,4 +238,104 @@ void test_M_i(int* passed, int* failed) {
     free_M(m_1);
     free_M(m_2);
     free_characteristic_vectors(cvs);
+
+    size = 7;
+    cvs = calculate_characteristic_vectors("werkeun", size);
+    m_0 = calculate_M("werkeun", "gekreun", cvs);
+    m_1 = calculate_M_i("werkeun", "gekreun", cvs, m_0);
+    m_2 = calculate_M_i("werkeun", "gekreun", cvs, m_1);
+    M* m_3 = calculate_M_i("werkeun", "gekreun", cvs, m_2);
+    int expected_werkeun_2[7][7] = {
+            {1, 1, 0, 0, 0, 0, 0}, /* g */
+            {1, 1, 1, 0, 0, 0, 0}, /* e */
+            {1, 1, 1, 1, 0, 0, 0}, /* k */
+            {1, 1, 1, 0, 0, 0, 0}, /* r */
+            {1, 1, 1, 0, 0, 0, 0}, /* e */
+            {1, 1, 1, 0, 0, 0, 0}, /* u */
+            {1, 1, 0, 0, 0, 0, 0}  /* n */
+    };
+    bitvector* testing_column_werkeun = m_2->head;
+    for (int i = 0; i < m_2->n; i++) {
+        if (equal(testing_column_werkeun->value, expected_werkeun_2[i], size) == false) {
+            (*failed)++;
+            perror("M z=werkeun, t=gekreun test (e=2) failed!");
+            break;
+        }
+        testing_column_werkeun = testing_column_werkeun->next;
+    }
+    if (testing_column_werkeun == NULL) {
+        (*passed)++;
+    }
+    int expected_werkeun_3[7][7] = {
+            {1, 1, 1, 0, 0, 0, 0}, /* g */
+            {1, 1, 1, 1, 0, 0, 0}, /* e */
+            {1, 1, 1, 1, 1, 0, 0}, /* k */
+            {1, 1, 1, 1, 1, 0, 0}, /* r */
+            {1, 1, 1, 1, 1, 0, 0}, /* e */
+            {1, 1, 1, 1, 0, 1, 0}, /* u */
+            {1, 1, 1, 1, 0, 0, 1}  /* n */
+    };
+    testing_column_werkeun = m_3->head;
+    for (int i = 0; i < m_2->n; i++) {
+        if (equal(testing_column_werkeun->value, expected_werkeun_3[i], size) == false) {
+            (*failed)++;
+            perror("M z=werkeun, t=gekreun test (e=3) failed!");
+            break;
+        }
+        testing_column_werkeun = testing_column_werkeun->next;
+    }
+    if (testing_column_werkeun == NULL) {
+        (*passed)++;
+    }
+    free_M(m_0);
+    free_M(m_1);
+    free_M(m_2);
+    free_M(m_3);
+    free_characteristic_vectors(cvs);
+}
+
+void test_shiftAND_errors(int* passed, int* failed) {
+    if (shiftAND_errors("zoek", "mijn zoek string") == 0) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 1 failed!");
+    }
+
+    if (shiftAND_errors("zoeck", "mijn zoek string") == 1) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 2 failed!");
+    }
+
+    if (shiftAND_errors("werken", "gekreun") == -1) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 3 failed!");
+    }
+
+    int result = shiftAND_errors("werkeun", "gekreun");
+    if (result == 3) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        printf("Result for werkeun-gekreun: %d\n", result);
+        perror("shiftAND_errors test 4 failed!");
+    }
+
+    if (shiftAND_errors("ans", "ananas") == 1) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 5 failed!");
+    }
+
+    if (shiftAND_errors("zoeven", "zoekken") == 2) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 6 failed!");
+    }
 }

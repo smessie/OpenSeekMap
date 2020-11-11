@@ -28,6 +28,15 @@ typedef struct M_t {
 bool shiftAND(char* z, char* t);
 
 /**
+ * Checks if a search string is contained in a text with an edit distance of 3 or less.
+ * Uses an algorithm based on shiftAND and edit distance.
+ * @param z - The search string.
+ * @param t - Text to be searched in.
+ * @return Cost to find the search string in the text. -1 for infinity (=not found). -1 ≤ cost ≤ 3.
+ */
+int shiftAND_errors(char* z, char* t);
+
+/**
  * Generate a linked list of all characteristic vectors for which the letter is in the search string.
  * @param z - The search string for which the CVs should be calculated.
  * @param size - Size of the search string.
@@ -78,5 +87,7 @@ void free_M(M* matrix);
  * @return a pointer to the linked list matrix M.
  */
 M* calculate_M_i(char* z, char* t, characteristic_vectors* cvs, M* M_prev);
+
+bool check_for_match(M* m);
 
 #endif //AD3_PROJECT_ALGORITHM_H

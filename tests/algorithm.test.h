@@ -17,4 +17,6 @@ void test_M(int* passed, int* failed);
 
 void test_M_i(int* passed, int* failed);
 
+void test_shiftAND_errors(int* passed, int* failed);
+
 #endif //AD3_PROJECT_ALGORITHM_TEST_H

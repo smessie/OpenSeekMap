@@ -39,6 +39,55 @@ bool shiftAND(char* z, char* t) {
     return false;
 }
 
+int shiftAND_errors(char* z, char* t) {
+    // Initialize variables
+    int max_errors = 3;
+    int length_z = strlen(z);
+    characteristic_vectors* cvs = calculate_characteristic_vectors(z, length_z);
+
+    // First calculate M_0 matrix, so without errors.
+    M* m = calculate_M(z, t, cvs);
+    for (int i = 0; i < max_errors; i++) {
+        if (check_for_match(m) == true) {
+            // Search string found with cost i.
+            free_characteristic_vectors(cvs);
+            free_M(m);
+            return i;
+        }
+        // Now calculate matrix with one more error = cost +1
+        M* m_next = calculate_M_i(z, t, cvs, m);
+        free_M(m);
+        m = m_next;
+    }
+
+    if (check_for_match(m) == true) {
+        // Search string found with the maximal allowed cost.
+        free_characteristic_vectors(cvs);
+        free_M(m);
+        return max_errors;
+    }
+
+    // Cost higher than 3 not allowed so cost is infinity aka -1. Search string not found.
+    free_characteristic_vectors(cvs);
+    free_M(m);
+    return -1;
+}
+
+bool check_for_match(M* m) {
+    bitvector* column = m->head;
+    for (int i = 0; i < m->n; i++) {
+        if (column->value[m->m - 1] == 1) {
+            // There was a 1 on the last row so we found a match.
+            //char bitstring[m->m];
+            //bitvector_to_string(column->value, m->m, bitstring);
+            //printf("Last of %s is %d\n", bitstring, column->value[m->n - 1])
+            return true;
+        }
+        column = column->next;
+    }
+    return false;
+}
+
 characteristic_vectors* calculate_characteristic_vectors(char* z, int size) {
     characteristic_vectors* cvs = (characteristic_vectors*) malloc(sizeof(characteristic_vectors));
     cvs->zeros = (int*) calloc(size, sizeof(int));
