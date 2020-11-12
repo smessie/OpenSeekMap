@@ -23,8 +23,21 @@ Database* load_database(char* path) {
     database->head = NULL;
     database->tail = NULL;
 
+    regex_t regex;
+    int reti = regcomp(&regex, "^[0-9]+\t[^\t]+\t[1-3]?[0-9]\t[0-9]+(.[0-9]+)?\t[0-9]+(.[0-9]+)?(\n)?$", REG_EXTENDED);
+    if (reti) {
+        perror("Could not compile regex.");
+        fclose(fp);
+        regfree(&regex);
+        return database;
+    }
+
     char line[LINE_SIZE];
     while (fgets(line, sizeof(line), fp) != NULL) {
+        if (validate_input_entry(line, regex) == false) {
+            printf("Following entry in the database was invalid and thereby skipped:\n%s\n", line);
+            continue;
+        }
         Entry* entry = malloc(sizeof(Entry));
         if (entry == NULL) {
             perror("Failed to malloc entry.\n");
@@ -59,8 +72,9 @@ Database* load_database(char* path) {
         add_entry(database, entry);
     }
 
-    // Close file
+    // Close file and regex buffer
     fclose(fp);
+    regfree(&regex);
 
     return database;
 }
@@ -100,4 +114,9 @@ void print_database(Database* database) {
         i++;
         entry = entry->next;
     }
+}
+
+bool validate_input_entry(char line[], regex_t regex) {
+    int reti = regexec(&regex, line, 0, NULL, 0);
+    return reti == 0;
 }

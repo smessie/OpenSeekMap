@@ -6,6 +6,8 @@
 #define AD3_PROJECT_DATABASE_H
 
 #include <stdint.h>
+#include <stdbool.h>
+#include <regex.h>
 
 typedef struct Entry_t {
     uint64_t id;
@@ -30,5 +32,7 @@ void add_entry(Database* database, Entry* entry);
 void free_database(Database* database);
 
 void print_database(Database* database);
+
+bool validate_input_entry(char line[], regex_t regex);
 
 #endif //AD3_PROJECT_DATABASE_H

@@ -18,6 +18,9 @@ int main(int argc, char** argv) {
     printf("Loading database '%s'...\n", database_name);
     Database* database = load_database(database_name);
 
+    // Database is loaded, so report to user by sending question mark.
+    printf("?\n");
+
     // Get optional longitude and latitude
     double longitude;
     double latitude;
@@ -33,7 +36,7 @@ int main(int argc, char** argv) {
         printf("You entered: %s\n", str);
     }
 
-    print_database(database);
+    // print_database(database);
 
     // End program
     free_database(database);
