@@ -4,8 +4,4 @@ strings/utf8.c
 algorithm.c
 bitwise_operators.c
 database.c
-main.c
-database.c
-strings/accents.c
-strings/string_util.c
-algorithm.c
+query_handler.c
