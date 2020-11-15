@@ -19,6 +19,8 @@ bool shiftAND(char* z, char* t) {
 
     if (z[0] == t[0]) {
         if (length_z == 1) {
+            free(column);
+            free_characteristic_vectors(cvs);
             return true;
         }
         bit(column, length_z - 1, length_z, false);
@@ -30,6 +32,8 @@ bool shiftAND(char* z, char* t) {
         AND(column, C(cvs, t[j]), column, length_z);
 
         if (column[length_z - 1] == 1) {
+            free(column);
+            free_characteristic_vectors(cvs);
             return true;
         }
     }
@@ -200,6 +204,8 @@ M* calculate_M(char* z, char* t, characteristic_vectors* cvs) {
         entry->next = new_entry;
         entry = new_entry;
     }
+    free(column);
+
     return matrix;
 }
 

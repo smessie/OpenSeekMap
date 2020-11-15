@@ -110,7 +110,8 @@ void print_database(Database* database) {
     int i = 0;
     Entry* entry = database->head;
     while (entry != NULL) {
-        printf("%i. [%llu] %s (%s), (%f;%f)\n", i, entry->id, entry->name, entry->normalized, entry->longitude, entry->latitude);
+        // Valgrind in docker requires [%lu] instead of [%llu].
+        printf("%i. [%lu] %s (%s), (%f;%f)\n", i, entry->id, entry->name, entry->normalized, entry->longitude, entry->latitude);
         i++;
         entry = entry->next;
     }

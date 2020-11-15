@@ -4,7 +4,7 @@ echo "Starting to run tests"
 
 echo "Compiling..."
 # shellcheck disable=SC2046
-gcc -std=c18 -O3 -o test.out -Wall -g -lm test.c algorithm.test.c bitwise_operators.test.c $(cat ../sources | sed 's/^/..\/src\//ig')
+gcc -std=c18 -O3 -o test.out -Wall -Werror -g -lm test.c algorithm.test.c bitwise_operators.test.c $(cat ../sources | sed 's/^/..\/src\//ig')
 
 echo "Running tests"
 echo ""
