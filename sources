@@ -5,3 +5,4 @@ algorithm.c
 bitwise_operators.c
 database.c
 query_handler.c
+haversine_formula.c
