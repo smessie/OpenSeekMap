@@ -7,6 +7,8 @@
 
 #include <stdbool.h>
 
+#include "database.h"
+
 typedef struct QueryBreakdownPart_t {
     char* value;
     bool malloced_value;
@@ -31,10 +33,68 @@ typedef struct QueryBreakdownCollection_t {
     QueryBreakdown* tail;
 } QueryBreakdownCollection;
 
+typedef struct Match_t {
+    Entry* value;
+    int cost;
+    struct Match_t* next;
+} Match;
+
+typedef struct TotalMatch_t {
+    Match* head;
+    Match* tail;
+    Match* representative;
+    double correctness;
+    double synergy;
+    int n;
+    bool selected_as_best;
+    bool parent_collection_freed;
+    struct TotalMatch_t* next;
+} TotalMatch;
+
+typedef struct TotalMatchCollection_t {
+    TotalMatch* head;
+    TotalMatch* tail;
+} TotalMatchCollection;
+
+typedef struct BestMatches_t {
+    TotalMatch* match_1;
+    double value_1;
+
+    TotalMatch* match_2;
+    double value_2;
+
+    TotalMatch* match_3;
+    double value_3;
+
+    TotalMatch* match_4;
+    double value_4;
+
+    TotalMatch* match_5;
+    double value_5;
+} BestMatches;
+
 QueryBreakdownCollection* create_query_breakdown_collection(char* query);
 
 void free_query_breakdown_collection(QueryBreakdownCollection* collection);
 
 void free_query_breakdown(QueryBreakdown* breakdown);
+
+void free_total_match(TotalMatch* total_match);
+
+void free_total_match_collection(TotalMatchCollection* collection);
+
+TotalMatchCollection* calculate_query_breakdown_total_matches(QueryBreakdown* breakdown, Database* database);
+
+TotalMatch* duplicate_total_match(TotalMatch* source);
+
+void add_total_match_to_collection(TotalMatchCollection* collection, TotalMatch* match);
+
+void add_match_to_total_match(TotalMatch* total_match, Match* match);
+
+void calculate_total_match_correctness(TotalMatch* total_match);
+
+void calculate_all_total_matches_correctness(TotalMatchCollection* collection);
+
+void free_best_matches(BestMatches* best_matches);
 
 #endif //AD3_PROJECT_QUERY_HANDLER_H

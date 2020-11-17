@@ -25,3 +25,18 @@ void bitvector_to_string(int bitvector[], int size, char* dest) {
     }
     dest[size] = '\0';
 }
+
+void print_result(TotalMatch* total_match) {
+    if (total_match == NULL) {
+        return;
+    }
+    Match* match = total_match->representative;
+    printf("\n");
+    Match* part = match;
+    while (part != NULL) {
+        printf("%s ", part->value->name);
+        part = part->next;
+    }
+    // Valgrind in docker requires (%lu) instead of (%llu).
+    printf("(%lu)\ngeo:%f,%f\n~\n", match->value->id, match->value->latitude, match->value->longitude);
+}

@@ -1,7 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "database.h"
+#include "query_handler.h"
+#include "algorithm.h"
+#include "synergy.h"
+#include "sort_util.h"
+#include "strings/string_util.h"
 
 int main(int argc, char** argv) {
     printf("Project AD3 ~ Welcome to OpenSeekMap!\n");
@@ -34,9 +40,41 @@ int main(int argc, char** argv) {
     char str[100];
     while (scanf("%[^\n]%*c", str) == 1) {
         printf("You entered: %s\n", str);
-    }
 
-    // print_database(database);
+        BestMatches* best_matches = (BestMatches*) calloc(1, sizeof(BestMatches));
+        QueryBreakdownCollection* qbc = create_query_breakdown_collection(str);
+
+        // For each of the breakdowns, we look for total matches.
+        QueryBreakdown* breakdown = qbc->head;
+        while (breakdown != NULL) {
+            // Each QueryBreakdown has a collection of total matches.
+            TotalMatchCollection* tmc = calculate_query_breakdown_total_matches(breakdown, database);
+            calculate_all_total_matches_correctness(tmc);
+            calculate_all_total_matches_synergy(tmc);
+
+            if (argc == 4) {
+                calculate_best_matches_geo(best_matches, tmc, latitude, longitude);
+            } else {
+                calculate_best_matches(best_matches, tmc);
+            }
+
+            free_total_match_collection(tmc);
+            breakdown = breakdown->next;
+        }
+
+        // The 5 best matches are now in `best_matches`, ready to print out to the user.
+        print_result(best_matches->match_1);
+        print_result(best_matches->match_2);
+        print_result(best_matches->match_3);
+        print_result(best_matches->match_4);
+        print_result(best_matches->match_5);
+
+        printf("?\n");
+
+        // Free all stuff we do not need anymore and move on to the next query.
+        free_query_breakdown_collection(qbc);
+        free_best_matches(best_matches);
+    }
 
     // End program
     free_database(database);

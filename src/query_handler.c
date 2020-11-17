@@ -6,8 +6,9 @@
 
 #include <stdlib.h>
 #include <string.h>
-
 #include <stdio.h>
+
+#include "algorithm.h"
 
 QueryBreakdownCollection* create_query_breakdown_collection(char* query) {
     QueryBreakdownCollection* collection = (QueryBreakdownCollection*) malloc(sizeof(QueryBreakdownCollection));
@@ -132,4 +133,166 @@ void free_query_breakdown(QueryBreakdown* breakdown) {
         free(toBeRemoved);
     }
     free(breakdown);
+}
+
+void free_total_match(TotalMatch* total_match) {
+    if (total_match == NULL) {
+        return;
+    }
+    while (total_match->head != NULL) {
+        Match* toBeRemoved = total_match->head;
+        total_match->head = toBeRemoved->next;
+        free(toBeRemoved);
+    }
+    free(total_match);
+}
+
+void free_total_match_collection(TotalMatchCollection* collection) {
+    if (collection == NULL) {
+        return;
+    }
+    while (collection->head != NULL) {
+        TotalMatch* toBeRemoved = collection->head;
+        collection->head = toBeRemoved->next;
+        if (toBeRemoved->selected_as_best == true) {
+            toBeRemoved->parent_collection_freed = true;
+            toBeRemoved->next = NULL;
+        } else {
+            free_total_match(toBeRemoved);
+        }
+    }
+    free(collection);
+}
+
+TotalMatchCollection* calculate_query_breakdown_total_matches(QueryBreakdown* breakdown, Database* database) {
+    TotalMatchCollection* collection = (TotalMatchCollection*) malloc(sizeof(TotalMatchCollection));
+    collection->head = NULL;
+    collection->tail = NULL;
+
+    // For a split search query, look up each part separately.
+    QueryBreakdownPart* part = breakdown->head;
+    while (part != NULL) {
+        // We will create a new collection where every resulting match for this current part is added to the matches
+        // in the old collection.
+        TotalMatchCollection* new_collection = (TotalMatchCollection*) malloc(sizeof(TotalMatchCollection));
+        new_collection->head = NULL;
+        new_collection->tail = NULL;
+
+        // Now find for each string/part the matching results in the database.
+        Entry* entry = database->head;
+        while (entry != NULL) {
+            // Check if the database entry is a match by calculating its editing distance.
+            int cost = shiftAND_errors(part->value, entry->normalized);
+            if (cost != -1 && cost < 1 + strlen(part->value) / 3) {
+                // If it is a match, add it as a new v_i to all currently existing total matches.
+                if (collection->head == NULL) {
+                    // If this match is for the first part, do not extend the current total matches (because there are none),
+                    // but add totally new total match.
+                    Match* new_match = (Match*) malloc(sizeof(Match));
+                    new_match->value = entry;
+                    new_match->cost = cost;
+                    new_match->next = NULL;
+
+                    TotalMatch* total_match = (TotalMatch*) calloc(1, sizeof(TotalMatch));
+                    add_match_to_total_match(total_match, new_match);
+                    add_total_match_to_collection(new_collection, total_match);
+                } else {
+                    TotalMatch* total_match = collection->head;
+                    while (total_match != NULL) {
+                        Match* new_match = (Match*) malloc(sizeof(Match));
+                        new_match->value = entry;
+                        new_match->cost = cost;
+                        new_match->next = NULL;
+
+                        TotalMatch* duplicated_total_match = duplicate_total_match(total_match);
+                        add_match_to_total_match(duplicated_total_match, new_match);
+                        add_total_match_to_collection(new_collection, duplicated_total_match);
+
+                        total_match = total_match->next;
+                    }
+                }
+            }
+
+            entry = entry->next;
+        }
+
+        free_total_match_collection(collection);
+        collection = new_collection;
+        // If there is no total_match in new_collection, this means there were no matches for this QBP so this QB ends here.
+        // Return an empty TMC.
+        if (collection->head == NULL) {
+            return collection;
+        }
+
+        part = part->next;
+    }
+
+    return collection;
+}
+
+TotalMatch* duplicate_total_match(TotalMatch* source) {
+    TotalMatch* duplicate = (TotalMatch*) calloc(1, sizeof(TotalMatch));
+
+    Match* match_to_copy = source->head;
+    while (match_to_copy != NULL) {
+        Match* copied_match = (Match*) malloc(sizeof(Match));
+        copied_match->value = match_to_copy->value;
+        copied_match->cost = match_to_copy->cost;
+        copied_match->next = NULL;
+
+        add_match_to_total_match(duplicate, copied_match);
+
+        match_to_copy = match_to_copy->next;
+    }
+    return duplicate;
+}
+
+void add_total_match_to_collection(TotalMatchCollection* collection, TotalMatch* match) {
+    if (collection->head == NULL) {
+        collection->head = match;
+    } else {
+        collection->tail->next = match;
+    }
+    collection->tail = match;
+}
+
+void add_match_to_total_match(TotalMatch* total_match, Match* match) {
+    if (total_match->head == NULL) {
+        total_match->head = match;
+    } else {
+        total_match->tail->next = match;
+    }
+    total_match->tail = match;
+    total_match->n++;
+}
+
+void calculate_total_match_correctness(TotalMatch* total_match) {
+    int numerator = 0;
+    int denominator = 0;
+    Match* match = total_match->head;
+    while (match != NULL) {
+        int length_z = strlen(match->value->normalized);
+        numerator += length_z - match->cost;
+        denominator += length_z;
+
+        match = match->next;
+    }
+    total_match->correctness = numerator / denominator;
+}
+
+void calculate_all_total_matches_correctness(TotalMatchCollection* collection) {
+    TotalMatch* total_match = collection->head;
+    while (total_match != NULL) {
+        calculate_total_match_correctness(total_match);
+        total_match = total_match->next;
+    }
+}
+
+void free_best_matches(BestMatches* best_matches) {
+    free_total_match(best_matches->match_1);
+    free_total_match(best_matches->match_2);
+    free_total_match(best_matches->match_3);
+    free_total_match(best_matches->match_4);
+    free_total_match(best_matches->match_5);
+    free(best_matches);
 }
