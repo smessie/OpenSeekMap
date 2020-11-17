@@ -60,6 +60,7 @@ void free_characteristic_vectors(characteristic_vectors* cvs);
 
 /**
  * Generate a linked list of all bitvectors which indicates of a (prefix of a) search string matches a substring of a text.
+ * Adjusted so that the whole text should match.
  * @param z - The search string for which the CVs should be calculated.
  * @param t - The text to search in.
  * @param cvs - The characteristic vectors for the search string.
@@ -79,6 +80,7 @@ void free_M(M* matrix);
  *
  * Implementation started from shiftAND with errors but modified so that it not only takes into account replacing a
  * character but also adding or deleting a character and switch two characters from place (TODO).
+ * Adjusted so that the whole text should match.
  *
  * @param z - The search string for which the CVs should be calculated.
  * @param t - The text to search in.

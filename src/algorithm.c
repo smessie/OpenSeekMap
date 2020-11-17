@@ -79,15 +79,12 @@ int shiftAND_errors(char* z, char* t) {
 
 bool check_for_match(M* m) {
     bitvector* column = m->head;
-    for (int i = 0; i < m->n; i++) {
-        if (column->value[m->m - 1] == 1) {
-            // There was a 1 on the last row so we found a match.
-            //char bitstring[m->m];
-            //bitvector_to_string(column->value, m->m, bitstring);
-            //printf("Last of %s is %d\n", bitstring, column->value[m->n - 1])
-            return true;
-        }
+    for (int i = 0; i < m->n - 1; i++) {
         column = column->next;
+    }
+    if (column->value[m->m - 1] == 1) {
+        // There was a 1 on the last row and column so we found a match.
+        return true;
     }
     return false;
 }
@@ -188,7 +185,7 @@ M* calculate_M(char* z, char* t, characteristic_vectors* cvs) {
 
     for (int j = 1; j < matrix->n; j++) {
         // This is where the magic happens :tada:
-        shift(column, length_z, 1);
+        shift(column, length_z, 0);
         AND(column, C(cvs, t[j]), column, length_z);
 
         // Write back the resulting column to new alloc.
@@ -261,10 +258,10 @@ M* calculate_M_i(char* z, char* t, characteristic_vectors* cvs, M* M_prev) {
         }
         // This is where the magic happens :tada: *take 2*
         // We are not going to OR with (1,0,...,0) as we already use a SHIFT that inserts a 1.
-        shift(column, length_z, 1);
+        shift(column, length_z, 0);
         AND(column, C(cvs, t[j]), column, length_z);
-        shift(temp_shifting_M_minus_1_column, length_z, 1);
-        shift(temp_M_minus_1_insert_char_column, length_z, 1);
+        shift(temp_shifting_M_minus_1_column, length_z, 0);
+        shift(temp_M_minus_1_insert_char_column, length_z, 0);
         OR(temp_shifting_M_minus_1_column, column, column, length_z);
         OR(temp_M_minus_1_insert_char_column, column, column, length_z);
         OR(temp_M_minus_1_delete_char_column, column, column, length_z);

@@ -124,9 +124,9 @@ void test_M(int* passed, int* failed) {
     int expected_ana[6][3] = {
             {1, 0, 0},
             {0, 1, 0},
-            {1, 0, 1},
-            {0, 1, 0},
-            {1, 0, 1},
+            {0, 0, 1},
+            {0, 0, 0},
+            {0, 0, 0},
             {0, 0, 0}
     };
     bitvector* testing_column_ana = matrix->head;
@@ -151,10 +151,10 @@ void test_M(int* passed, int* failed) {
             {1, 0, 0, 0},
             {0, 1, 0, 0},
             {0, 0, 1, 0},
-            {1, 0, 0, 0},
-            {0, 1, 0, 0},
-            {0, 0, 1, 0},
-            {0, 0, 0, 1}
+            {0, 0, 0, 0},
+            {0, 0, 0, 0},
+            {0, 0, 0, 0},
+            {0, 0, 0, 0}
     };
     bitvector* testing_column_bond = matrix->head;
     for (int i = 0; i < matrix->n; i++) {
@@ -175,28 +175,24 @@ void test_M(int* passed, int* failed) {
 void test_M_i(int* passed, int* failed) {
     int size = 4;
     characteristic_vectors* cvs = calculate_characteristic_vectors("dank", size);
-    M* m_0 = calculate_M("dank", "een_dansfeest", cvs);
-    M* m_1 = calculate_M_i("dank", "een_dansfeest", cvs, m_0);
+    M* m_0 = calculate_M("dank", "dansfeest", cvs);
+    M* m_1 = calculate_M_i("dank", "dansfeest", cvs, m_0);
     int expected_dank[13][4] = {
-            {1, 0, 0, 0}, /* e */
-            {1, 0, 0, 0}, /* e */
-            {1, 0, 0, 0}, /* n */
-            {1, 0, 0, 0}, /* _ */
             {1, 1, 0, 0}, /* d */
             {1, 1, 1, 0}, /* a */
-            {1, 1, 1, 1}, /* n */
-            {1, 0, 1, 1}, /* s */
-            {1, 0, 0, 0}, /* f */
-            {1, 0, 0, 0}, /* e */
-            {1, 0, 0, 0}, /* e */
-            {1, 0, 0, 0}, /* s */
-            {1, 0, 0, 0}  /* t */
+            {0, 1, 1, 1}, /* n */
+            {0, 0, 1, 1}, /* s */
+            {0, 0, 0, 0}, /* f */
+            {0, 0, 0, 0}, /* e */
+            {0, 0, 0, 0}, /* e */
+            {0, 0, 0, 0}, /* s */
+            {0, 0, 0, 0}  /* t */
     };
     bitvector* testing_column_dank = m_1->head;
     for (int i = 0; i < m_1->n; i++) {
         if (equal(testing_column_dank->value, expected_dank[i], size) == false) {
             (*failed)++;
-            perror("M z=dank, t=een_dansfeest test failed!");
+            perror("M z=dank, t=dansfeest test failed!");
             break;
         }
         testing_column_dank = testing_column_dank->next;
@@ -217,10 +213,10 @@ void test_M_i(int* passed, int* failed) {
             {1, 1, 1, 0, 0, 0}, /* z */
             {1, 1, 1, 1, 0, 0}, /* o */
             {1, 1, 1, 1, 1, 0}, /* e */
-            {1, 1, 1, 1, 1, 0}, /* k */
-            {1, 1, 1, 1, 1, 0}, /* k */
-            {1, 1, 1, 0, 1, 0}, /* e */
-            {1, 1, 0, 0, 0, 1}  /* n */
+            {0, 1, 1, 1, 1, 0}, /* k */
+            {0, 0, 1, 1, 1, 0}, /* k */
+            {0, 0, 0, 0, 1, 0}, /* e */
+            {0, 0, 0, 0, 0, 1}  /* n */
     };
     bitvector* testing_column_zoeven = m_2->head;
     for (int i = 0; i < m_2->n; i++) {
@@ -248,11 +244,11 @@ void test_M_i(int* passed, int* failed) {
     int expected_werkeun_2[7][7] = {
             {1, 1, 0, 0, 0, 0, 0}, /* g */
             {1, 1, 1, 0, 0, 0, 0}, /* e */
-            {1, 1, 1, 1, 0, 0, 0}, /* k */
-            {1, 1, 1, 0, 0, 0, 0}, /* r */
-            {1, 1, 1, 0, 0, 0, 0}, /* e */
-            {1, 1, 1, 0, 0, 0, 0}, /* u */
-            {1, 1, 0, 0, 0, 0, 0}  /* n */
+            {0, 1, 1, 1, 0, 0, 0}, /* k */
+            {0, 0, 1, 0, 0, 0, 0}, /* r */
+            {0, 0, 0, 0, 0, 0, 0}, /* e */
+            {0, 0, 0, 0, 0, 0, 0}, /* u */
+            {0, 0, 0, 0, 0, 0, 0}  /* n */
     };
     bitvector* testing_column_werkeun = m_2->head;
     for (int i = 0; i < m_2->n; i++) {
@@ -270,10 +266,10 @@ void test_M_i(int* passed, int* failed) {
             {1, 1, 1, 0, 0, 0, 0}, /* g */
             {1, 1, 1, 1, 0, 0, 0}, /* e */
             {1, 1, 1, 1, 1, 0, 0}, /* k */
-            {1, 1, 1, 1, 1, 0, 0}, /* r */
-            {1, 1, 1, 1, 1, 0, 0}, /* e */
-            {1, 1, 1, 1, 0, 1, 0}, /* u */
-            {1, 1, 1, 1, 0, 0, 1}  /* n */
+            {0, 1, 1, 1, 1, 0, 0}, /* r */
+            {0, 0, 1, 1, 1, 0, 0}, /* e */
+            {0, 0, 0, 0, 0, 1, 0}, /* u */
+            {0, 0, 0, 0, 0, 0, 1}  /* n */
     };
     testing_column_werkeun = m_3->head;
     for (int i = 0; i < m_2->n; i++) {
@@ -292,17 +288,45 @@ void test_M_i(int* passed, int* failed) {
     free_M(m_2);
     free_M(m_3);
     free_characteristic_vectors(cvs);
+
+    size = 3;
+    cvs = calculate_characteristic_vectors("ans", size);
+    m_0 = calculate_M("ans", "anan", cvs);
+    m_1 = calculate_M_i("ans", "anan", cvs, m_0);
+    m_2 = calculate_M_i("ans", "anan", cvs, m_1);
+    int expected_ans[4][3] = {
+            {1, 1, 1}, /* a */
+            {1, 1, 1}, /* n */
+            {1, 1, 1}, /* a */
+            {0, 1, 1} /* n */
+    };
+    bitvector* testing_column_ans = m_2->head;
+    for (int i = 0; i < m_2->n; i++) {
+        if (equal(testing_column_ans->value, expected_ans[i], size) == false) {
+            (*failed)++;
+            perror("M z=ans, t=anan test failed!");
+            break;
+        }
+        testing_column_ans = testing_column_ans->next;
+    }
+    if (testing_column_ans == NULL) {
+        (*passed)++;
+    }
+    free_M(m_0);
+    free_M(m_1);
+    free_M(m_2);
+    free_characteristic_vectors(cvs);
 }
 
 void test_shiftAND_errors(int* passed, int* failed) {
-    if (shiftAND_errors("zoek", "mijn zoek string") == 0) {
+    if (shiftAND_errors("zoek", "zoek") == 0) {
         (*passed)++;
     } else {
         (*failed)++;
         perror("shiftAND_errors test 1 failed!");
     }
 
-    if (shiftAND_errors("zoeck", "mijn zoek string") == 1) {
+    if (shiftAND_errors("zoeck", "zoek") == 1) {
         (*passed)++;
     } else {
         (*failed)++;
@@ -316,16 +340,14 @@ void test_shiftAND_errors(int* passed, int* failed) {
         perror("shiftAND_errors test 3 failed!");
     }
 
-    int result = shiftAND_errors("werkeun", "gekreun");
-    if (result == 3) {
+    if (shiftAND_errors("werkeun", "gekreun") == 3) {
         (*passed)++;
     } else {
         (*failed)++;
-        printf("Result for werkeun-gekreun: %d\n", result);
         perror("shiftAND_errors test 4 failed!");
     }
 
-    if (shiftAND_errors("ans", "ananas") == 1) {
+    if (shiftAND_errors("ans", "anan") == 2) {
         (*passed)++;
     } else {
         (*failed)++;
