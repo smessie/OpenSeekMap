@@ -181,34 +181,46 @@ TotalMatchCollection* calculate_query_breakdown_total_matches(QueryBreakdown* br
         // Now find for each string/part the matching results in the database.
         Entry* entry = database->head;
         while (entry != NULL) {
-            // Check if the database entry is a match by calculating its editing distance.
-            int cost = shiftAND_errors(part->value, entry->normalized);
-            if (cost != -1 && cost < 1 + strlen(part->value) / 3) {
-                // If it is a match, add it as a new v_i to all currently existing total matches.
-                if (collection->head == NULL) {
-                    // If this match is for the first part, do not extend the current total matches (because there are none),
-                    // but add totally new total match.
-                    Match* new_match = (Match*) malloc(sizeof(Match));
-                    new_match->value = entry;
-                    new_match->cost = cost;
-                    new_match->next = NULL;
+            // Only calculate cost if entry has a chance to match.
+            // This means |entry| <= |query| + 3 and |entry| >= |query| - 3,
+            // and |entry| <= |query| + (1+|query|/3) and |entry| >= |query| - (1+|query|/3).
+            int entry_length = strlen(entry->normalized);
+            int query_length = strlen(part->value);
+            double max_cost = 1 + query_length / 3;
+            if (max_cost > 3) {
+                max_cost = 3;
+            }
 
-                    TotalMatch* total_match = (TotalMatch*) calloc(1, sizeof(TotalMatch));
-                    add_match_to_total_match(total_match, new_match);
-                    add_total_match_to_collection(new_collection, total_match);
-                } else {
-                    TotalMatch* total_match = collection->head;
-                    while (total_match != NULL) {
+            if (entry_length <= query_length + max_cost && entry_length >= query_length - max_cost) {
+                // Check if the database entry is a match by calculating its editing distance.
+                int cost = shiftAND_errors(part->value, entry->normalized);
+                if (cost != -1 && cost < 1 + query_length / 3) {
+                    // If it is a match, add it as a new v_i to all currently existing total matches.
+                    if (collection->head == NULL) {
+                        // If this match is for the first part, do not extend the current total matches (because there are none),
+                        // but add totally new total match.
                         Match* new_match = (Match*) malloc(sizeof(Match));
                         new_match->value = entry;
                         new_match->cost = cost;
                         new_match->next = NULL;
 
-                        TotalMatch* duplicated_total_match = duplicate_total_match(total_match);
-                        add_match_to_total_match(duplicated_total_match, new_match);
-                        add_total_match_to_collection(new_collection, duplicated_total_match);
+                        TotalMatch* total_match = (TotalMatch*) calloc(1, sizeof(TotalMatch));
+                        add_match_to_total_match(total_match, new_match);
+                        add_total_match_to_collection(new_collection, total_match);
+                    } else {
+                        TotalMatch* total_match = collection->head;
+                        while (total_match != NULL) {
+                            Match* new_match = (Match*) malloc(sizeof(Match));
+                            new_match->value = entry;
+                            new_match->cost = cost;
+                            new_match->next = NULL;
 
-                        total_match = total_match->next;
+                            TotalMatch* duplicated_total_match = duplicate_total_match(total_match);
+                            add_match_to_total_match(duplicated_total_match, new_match);
+                            add_total_match_to_collection(new_collection, duplicated_total_match);
+
+                            total_match = total_match->next;
+                        }
                     }
                 }
             }
