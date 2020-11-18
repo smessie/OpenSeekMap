@@ -32,7 +32,7 @@ void print_result(TotalMatch* total_match) {
     }
     Match* match = total_match->representative;
     printf("\n");
-    Match* part = match;
+    Match* part = total_match->head;
     while (part != NULL) {
         printf("%s ", part->value->name);
         part = part->next;

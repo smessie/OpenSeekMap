@@ -24,6 +24,7 @@ void test_create_query_breakdown_collection(int* passed, int* failed) {
     int de_sterre__gent = 0;
     int de__sterre_gent = 0;
     int de__sterre__gent = 0;
+    int count = 0;
 
     QueryBreakdownCollection* collection = create_query_breakdown_collection("De Sterre Gent");
     QueryBreakdown* breakdown = collection->head;
@@ -31,6 +32,7 @@ void test_create_query_breakdown_collection(int* passed, int* failed) {
         if (breakdown->head == NULL) {
             continue;
         }
+        count++;
         if (strcmp(breakdown->head->value, "De") == 0) {
             if (breakdown->head->next != NULL) {
                 if (strcmp(breakdown->head->next->value, "Sterre Gent") == 0) {
@@ -79,6 +81,11 @@ void test_create_query_breakdown_collection(int* passed, int* failed) {
     if (de__sterre__gent != 1) {
         (*failed)++;
         perror("QBC de__sterre__gent test failed!");
+        return;
+    }
+    if (count != 4) {
+        (*failed)++;
+        perror("QBC count test failed!");
         return;
     }
     (*passed)++;
