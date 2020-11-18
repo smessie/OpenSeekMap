@@ -9,6 +9,18 @@
 
 #include "database.h"
 
+typedef struct Query_t {
+    char* value;
+    struct Query_t* next;
+} Query;
+
+typedef struct QueryCollection_t {
+    Query* head;
+    Query* tail;
+    int min_length;
+    int max_length;
+} QueryCollection;
+
 typedef struct QueryBreakdownPart_t {
     char* value;
     bool malloced_value;
@@ -96,5 +108,9 @@ void calculate_total_match_correctness(TotalMatch* total_match);
 void calculate_all_total_matches_correctness(TotalMatchCollection* collection);
 
 void free_best_matches(BestMatches* best_matches);
+
+QueryCollection* read_queries();
+
+void free_query_collection(QueryCollection* collection);
 
 #endif //AD3_PROJECT_QUERY_HANDLER_H

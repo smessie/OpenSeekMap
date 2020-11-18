@@ -25,7 +25,7 @@ typedef struct Database_t {
     Entry* tail;
 } Database;
 
-Database* load_database(char* path);
+Database* load_database(char* path, int max);
 
 void add_entry(Database* database, Entry* entry);
 

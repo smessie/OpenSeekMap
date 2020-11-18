@@ -18,11 +18,14 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
+    // Read query's
+    QueryCollection* qc = read_queries();
+
     // Load database
     char database_name[64];
     strcpy(database_name, argv[1]);
     printf("Loading database '%s'...\n", database_name);
-    Database* database = load_database(database_name);
+    Database* database = load_database(database_name, qc->max_length);
 
     // Database is loaded, so report to user by sending question mark.
     printf("?\n");
@@ -36,13 +39,11 @@ int main(int argc, char** argv) {
         printf("Database: %s; Logitude: %f; Latitude: %f\n", database_name, longitude, latitude);
     }
 
-    // Read query's
-    char str[100];
-    while (scanf("%[^\n]%*c", str) == 1) {
-        printf("You entered: %s\n", str);
-
+    // Process query's
+    Query* query = qc->head;
+    while (query != NULL) {
         BestMatches* best_matches = (BestMatches*) calloc(1, sizeof(BestMatches));
-        QueryBreakdownCollection* qbc = create_query_breakdown_collection(str);
+        QueryBreakdownCollection* qbc = create_query_breakdown_collection(query->value);
 
         // For each of the breakdowns, we look for total matches.
         QueryBreakdown* breakdown = qbc->head;
@@ -74,9 +75,11 @@ int main(int argc, char** argv) {
         // Free all stuff we do not need anymore and move on to the next query.
         free_query_breakdown_collection(qbc);
         free_best_matches(best_matches);
+        query = query->next;
     }
 
     // End program
+    free_query_collection(qc);
     free_database(database);
     fclose(stdin);
     fclose(stdout);

@@ -296,3 +296,51 @@ void free_best_matches(BestMatches* best_matches) {
     free_total_match(best_matches->match_5);
     free(best_matches);
 }
+
+QueryCollection* read_queries() {
+    QueryCollection* collection = (QueryCollection*) malloc(sizeof(QueryCollection));
+    collection->head = NULL;
+    collection->tail = NULL;
+    collection->min_length = -1;
+    collection->max_length = -1;
+
+    char str[100];
+    while (scanf("%[^\n]%*c", str) == 1) {
+        // Create the query.
+        int length = strlen(str);
+        Query* query = (Query*) malloc(sizeof(Query));
+        query->value = (char*) malloc((length + 1) * sizeof(char));
+        strcpy(query->value, str);
+        query->next = NULL;
+
+        // Update query length statistics.
+        if (collection->min_length == -1 || length < collection->min_length) {
+            collection->min_length = length;
+        }
+        if (collection->max_length == -1 || length > collection->max_length) {
+            collection->max_length = length;
+        }
+
+        // Add query to the collection.
+        if (collection->head == NULL) {
+            collection->head = query;
+        } else {
+            collection->tail->next = query;
+        }
+        collection->tail = query;
+    }
+    return collection;
+}
+
+void free_query_collection(QueryCollection* collection) {
+    if (collection == NULL) {
+        return;
+    }
+    while (collection->head != NULL) {
+        Query* toBeRemoved = collection->head;
+        collection->head = toBeRemoved->next;
+        free(toBeRemoved->value);
+        free(toBeRemoved);
+    }
+    free(collection);
+}

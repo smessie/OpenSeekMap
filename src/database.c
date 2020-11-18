@@ -10,7 +10,7 @@
 
 #define LINE_SIZE 200
 
-Database* load_database(char* path) {
+Database* load_database(char* path, int max) {
     // Open file
     FILE* fp = fopen(path, "r");
     if (fp == NULL) {
@@ -38,31 +38,24 @@ Database* load_database(char* path) {
             printf("Following entry in the database was invalid and thereby skipped:\n%s\n", line);
             continue;
         }
-        Entry* entry = malloc(sizeof(Entry));
-        if (entry == NULL) {
-            perror("Failed to malloc entry.\n");
-            continue;
-        }
-        entry->next = NULL;
-        entry->id = strtoull(strtok(line, "\t"), NULL, 10);
-
+        uint64_t id = strtoull(strtok(line, "\t"), NULL, 10);
         char* name = strtok(NULL, "\t");
-        entry->name = (char*) malloc((strlen(name) + 1) * sizeof(char));
-        if (entry->name == NULL) {
-            perror("Failed to malloc entry name.\n");
-            free(entry);
+        int length = strlen(name);
+
+        // If length is longer than longest query length + 3 add errors; entry will never be matched.
+        if (length > max + 3) {
             continue;
         }
+
+        Entry* entry = malloc(sizeof(Entry));
+        entry->next = NULL;
+        entry->id = id;
+
+        entry->name = (char*) malloc((strlen(name) + 1) * sizeof(char));
         strcpy(entry->name, name);
 
         char* normalized = normalize_string(name);
         entry->normalized = (char*) malloc((strlen(normalized) + 1) * sizeof(char));
-        if (entry->normalized == NULL) {
-            perror("Failed to malloc entry normalized name.\n");
-            free(entry->name);
-            free(entry);
-            continue;
-        }
         strcpy(entry->normalized, normalized);
 
         entry->rank = atoi(strtok(NULL, "\t"));
