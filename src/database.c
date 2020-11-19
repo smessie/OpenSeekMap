@@ -24,7 +24,7 @@ Database* load_database(char* path, int max) {
     database->tail = NULL;
 
     regex_t regex;
-    int reti = regcomp(&regex, "^[0-9]+\t[^\t]+\t[1-3]?[0-9]\t[0-9]+(.[0-9]+)?\t[0-9]+(.[0-9]+)?(\n)?$", REG_EXTENDED);
+    int reti = regcomp(&regex, "^[0-9]+\t[^\t]+\t[1-3]?[0-9]\t-?[0-9]+(.[0-9]+)?\t-?[0-9]+(.[0-9]+)?(\n)?$", REG_EXTENDED);
     if (reti) {
         perror("Could not compile regex.");
         fclose(fp);
