@@ -113,4 +113,6 @@ QueryCollection* read_queries();
 
 void free_query_collection(QueryCollection* collection);
 
+double get_max_cost(int query_length);
+
 #endif //AD3_PROJECT_QUERY_HANDLER_H

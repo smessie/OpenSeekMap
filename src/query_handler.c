@@ -186,10 +186,7 @@ TotalMatchCollection* calculate_query_breakdown_total_matches(QueryBreakdown* br
             // and |entry| <= |query| + (1+|query|/3) and |entry| >= |query| - (1+|query|/3).
             int entry_length = strlen(entry->normalized);
             int query_length = strlen(part->value);
-            double max_cost = 1 + query_length / 3;
-            if (max_cost > 3) {
-                max_cost = 3;
-            }
+            double max_cost = get_max_cost(query_length);
 
             if (entry_length <= query_length + max_cost && entry_length >= query_length - max_cost) {
                 // Check if the database entry is a match by calculating its editing distance.
@@ -355,4 +352,12 @@ void free_query_collection(QueryCollection* collection) {
         free(toBeRemoved);
     }
     free(collection);
+}
+
+double get_max_cost(int query_length) {
+    double max_cost = 1 + query_length / 3;
+    if (max_cost > 3) {
+        max_cost = 3;
+    }
+    return max_cost;
 }
