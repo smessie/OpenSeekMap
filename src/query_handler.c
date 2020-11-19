@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #include "algorithm.h"
+#include "strings/string_util.h"
 
 QueryBreakdownCollection* create_query_breakdown_collection(char* query) {
     QueryBreakdownCollection* collection = (QueryBreakdownCollection*) malloc(sizeof(QueryBreakdownCollection));
@@ -319,7 +320,7 @@ QueryCollection* read_queries() {
         int length = strlen(str);
         Query* query = (Query*) malloc(sizeof(Query));
         query->value = (char*) malloc((length + 1) * sizeof(char));
-        strcpy(query->value, str);
+        strcpy(query->value, normalize_string(str));
         query->next = NULL;
 
         // Update query length statistics.
