@@ -9,6 +9,8 @@
 
 char* normalize_string(char* string);
 
+char* replace_punctuation_marks(char* string);
+
 void bitvector_to_string(int bitvector[], int size, char* dest);
 
 void print_result(TotalMatch* total_match);

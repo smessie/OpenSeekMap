@@ -320,7 +320,7 @@ QueryCollection* read_queries() {
         int length = strlen(str);
         Query* query = (Query*) malloc(sizeof(Query));
         query->value = (char*) malloc((length + 1) * sizeof(char));
-        strcpy(query->value, normalize_string(str));
+        strcpy(query->value, replace_punctuation_marks(normalize_string(str)));
         query->next = NULL;
 
         // Update query length statistics.
