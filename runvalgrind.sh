@@ -1,0 +1,1 @@
+echo "De Stérre Gent" | valgrind --trace-children=yes --track-fds=yes --track-origins=yes --leak-check=full --show-leak-kinds=definite,indirect,possible ./src/openseekmap "datasets/belgie.data"
