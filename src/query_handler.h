@@ -22,7 +22,8 @@ typedef struct QueryCollection_t {
 } QueryCollection;
 
 typedef struct QueryBreakdownPart_t {
-    char* value;
+    uint32_t* value;
+    int length;
     bool malloced_value;
     struct QueryBreakdownPart_t* next;
 } QueryBreakdownPart;

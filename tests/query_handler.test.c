@@ -5,10 +5,13 @@
 #include "query_handler.test.h"
 
 #include "../src/query_handler.h"
+#include "../src/strings/utf8.h"
 
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 void run_query_handler_tests() {
     int passed = 0;
@@ -26,6 +29,20 @@ void test_create_query_breakdown_collection(int* passed, int* failed) {
     int de__sterre__gent = 0;
     int count = 0;
 
+    uint32_t* temp_de = (uint32_t*) malloc(3 * sizeof(uint32_t));
+    u8_toucs(temp_de, 3, "De", -1);
+    uint32_t* temp_de_sterre = (uint32_t*) malloc(10 * sizeof(uint32_t));
+    u8_toucs(temp_de_sterre, 10, "De Sterre", -1);
+    uint32_t* temp_sterre = (uint32_t*) malloc(7 * sizeof(uint32_t));
+    u8_toucs(temp_sterre, 7, "Sterre", -1);
+    uint32_t* temp_gent = (uint32_t*) malloc(5 * sizeof(uint32_t));
+    u8_toucs(temp_gent, 5, "Gent", -1);
+    uint32_t* temp_sterre_gent = (uint32_t*) malloc(12 * sizeof(uint32_t));
+    u8_toucs(temp_sterre_gent, 12, "Sterre Gent", -1);
+    uint32_t* temp_de_sterre_gent = (uint32_t*) malloc(15 * sizeof(uint32_t));
+    u8_toucs(temp_de_sterre_gent, 15, "De Sterre Gent", -1);
+
+
     QueryBreakdownCollection* collection = create_query_breakdown_collection("De Sterre Gent");
     QueryBreakdown* breakdown = collection->head;
     while (breakdown != NULL) {
@@ -33,27 +50,27 @@ void test_create_query_breakdown_collection(int* passed, int* failed) {
             continue;
         }
         count++;
-        if (strcmp(breakdown->head->value, "De") == 0) {
+        if (memcmp(breakdown->head->value, temp_de, 3 * sizeof(uint32_t)) == 0) {
             if (breakdown->head->next != NULL) {
-                if (strcmp(breakdown->head->next->value, "Sterre Gent") == 0) {
-                    if (breakdown->head->next->next == NULL) {
-                        de__sterre_gent++;
-                    }
-                } else if (strcmp(breakdown->head->next->value, "Sterre") == 0) {
-                    if (breakdown->head->next->next != NULL && strcmp(breakdown->head->next->next->value, "Gent") == 0) {
+                if (memcmp(breakdown->head->next->value, temp_sterre, 7 * sizeof(uint32_t)) == 0) {
+                    if (breakdown->head->next->next != NULL && memcmp(breakdown->head->next->next->value, temp_gent, 5 * sizeof(uint32_t)) == 0) {
                         if (breakdown->head->next->next->next == NULL) {
                             de__sterre__gent++;
                         }
                     }
+                } else if (memcmp(breakdown->head->next->value, temp_sterre_gent, 12 * sizeof(uint32_t)) == 0) {
+                    if (breakdown->head->next->next == NULL) {
+                        de__sterre_gent++;
+                    }
                 }
             }
-        } else if (strcmp(breakdown->head->value, "De Sterre") == 0) {
-            if (breakdown->head->next != NULL && strcmp(breakdown->head->next->value, "Gent") == 0) {
+        } else if (memcmp(breakdown->head->value, temp_de_sterre, 10 * sizeof(uint32_t)) == 0) {
+            if (breakdown->head->next != NULL && memcmp(breakdown->head->next->value, temp_gent, 5 * sizeof(uint32_t)) == 0) {
                 if (breakdown->head->next->next == NULL) {
                     de_sterre__gent++;
                 }
             }
-        } else if (strcmp(breakdown->head->value, "De Sterre Gent") == 0) {
+        } else if (memcmp(breakdown->head->value, temp_de_sterre_gent, 15 * sizeof(uint32_t)) == 0) {
             if (breakdown->head->next == NULL) {
                 de_sterre_gent++;
             }
@@ -62,6 +79,12 @@ void test_create_query_breakdown_collection(int* passed, int* failed) {
     }
 
     free_query_breakdown_collection(collection);
+    free(temp_de);
+    free(temp_sterre);
+    free(temp_gent);
+    free(temp_de_sterre);
+    free(temp_sterre_gent);
+    free(temp_de_sterre_gent);
 
     if (de_sterre_gent != 1) {
         (*failed)++;

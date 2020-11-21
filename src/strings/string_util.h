@@ -7,9 +7,11 @@
 
 #include "../query_handler.h"
 
+uint32_t* normalize_string_utf8(char* string, int length);
+
 char* normalize_string(char* string);
 
-char* replace_punctuation_marks(char* string);
+uint32_t* replace_punctuation_marks(uint32_t* string, int length);
 
 void bitvector_to_string(int bitvector[], int size, char* dest);
 

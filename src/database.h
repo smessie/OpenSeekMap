@@ -12,7 +12,8 @@
 typedef struct Entry_t {
     uint64_t id;
     char* name;
-    char* normalized;
+    uint32_t* normalized;
+    int length;
     int rank;
     double longitude;
     double latitude;

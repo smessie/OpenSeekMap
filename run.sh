@@ -1,2 +1,1 @@
-echo "De Sterre Gent
-Vrijheidstraat Brugge" | valgrind --trace-children=yes --track-fds=yes --track-origins=yes --leak-check=full --show-leak-kinds=definite,indirect,possible ./src/openseekmap "datasets/belgie-ascii.data"
+echo "De Stérre Gent" | ./src/openseekmap "datasets/belgie.data"

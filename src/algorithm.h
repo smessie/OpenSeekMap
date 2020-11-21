@@ -6,9 +6,10 @@
 #define AD3_PROJECT_ALGORITHM_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef struct bitvector_t {
-    char key;
+    uint32_t key;
     int* value;
     struct bitvector_t* next;
 } bitvector;
@@ -34,7 +35,7 @@ bool shiftAND(char* z, char* t);
  * @param t - Text to be searched in.
  * @return Cost to find the search string in the text. -1 for infinity (=not found). -1 ≤ cost ≤ 3.
  */
-int shiftAND_errors(char* z, char* t);
+int shiftAND_errors(uint32_t* z, uint32_t* t, int length_z, int length_t);
 
 /**
  * Generate a linked list of all characteristic vectors for which the letter is in the search string.
@@ -42,7 +43,7 @@ int shiftAND_errors(char* z, char* t);
  * @param size - Size of the search string.
  * @return a pointer to a struct containing a pointer to the linked list.
  */
-characteristic_vectors* calculate_characteristic_vectors(char* z, int size);
+characteristic_vectors* calculate_characteristic_vectors(uint32_t* z, int size);
 
 /**
  * Find the characteristic vector in the struct holding it.
@@ -50,7 +51,7 @@ characteristic_vectors* calculate_characteristic_vectors(char* z, int size);
  * @param x - Character for which we want the characteristic vector.
  * @return the characteristic vector or all zeros if not contained.
  */
-int* C(characteristic_vectors* cvs, char x);
+int* C(characteristic_vectors* cvs, uint32_t x);
 
 /**
  * Free the struct and all its children.
@@ -66,7 +67,7 @@ void free_characteristic_vectors(characteristic_vectors* cvs);
  * @param cvs - The characteristic vectors for the search string.
  * @return a pointer to the linked list matrix M.
  */
-M* calculate_M(char* z, char* t, characteristic_vectors* cvs);
+M* calculate_M(uint32_t* z, uint32_t* t, characteristic_vectors* cvs, int length_z, int length_t);
 
 /**
  * Free the struct and all its children.
@@ -88,7 +89,7 @@ void free_M(M* matrix);
  * @param M_prev - Matrix M which contains the values to start from (1 error less).
  * @return a pointer to the linked list matrix M.
  */
-M* calculate_M_i(char* z, char* t, characteristic_vectors* cvs, M* M_prev);
+M* calculate_M_i(uint32_t* z, uint32_t* t, characteristic_vectors* cvs, M* M_prev, int length_z, int length_t);
 
 bool check_for_match(M* m);
 

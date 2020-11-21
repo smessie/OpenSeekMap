@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "strings/string_util.h"
+#include "strings/utf8.h"
 
 #define LINE_SIZE 200
 
@@ -40,7 +41,7 @@ Database* load_database(char* path, int max) {
         }
         uint64_t id = strtoull(strtok(line, "\t"), NULL, 10);
         char* name = strtok(NULL, "\t");
-        int length = strlen(name);
+        int length = u8_strlen(name);
 
         // If length is longer than longest query length + 3 add errors; entry will never be matched.
         if (length > max + 3) {
@@ -54,9 +55,8 @@ Database* load_database(char* path, int max) {
         entry->name = (char*) malloc((strlen(name) + 1) * sizeof(char));
         strcpy(entry->name, name);
 
-        char* normalized = normalize_string(name);
-        entry->normalized = (char*) malloc((strlen(normalized) + 1) * sizeof(char));
-        strcpy(entry->normalized, normalized);
+        entry->normalized = (uint32_t*) normalize_string_utf8(name, length);
+        entry->length = length;
 
         entry->rank = atoi(strtok(NULL, "\t"));
         entry->longitude = strtod(strtok(NULL, "\t"), NULL);
@@ -104,7 +104,7 @@ void print_database(Database* database) {
     Entry* entry = database->head;
     while (entry != NULL) {
         // Valgrind in docker requires [%lu] instead of [%llu].
-        printf("%i. [%lu] %s (%s), (%f;%f)\n", i, entry->id, entry->name, entry->normalized, entry->longitude, entry->latitude);
+        u8_printf("%i. [%lu] %s (%s), (%f;%f)\n", i, entry->id, entry->name, entry->normalized, entry->longitude, entry->latitude);
         i++;
         entry = entry->next;
     }

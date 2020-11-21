@@ -10,6 +10,7 @@
 
 #include "algorithm.h"
 #include "strings/string_util.h"
+#include "strings/utf8.h"
 
 QueryBreakdownCollection* create_query_breakdown_collection(char* query) {
     QueryBreakdownCollection* collection = (QueryBreakdownCollection*) malloc(sizeof(QueryBreakdownCollection));
@@ -17,18 +18,23 @@ QueryBreakdownCollection* create_query_breakdown_collection(char* query) {
     collection->tail = NULL;
 
     // We need to malloc the query because strtok needs to be able to edit it.
-    char* malloced_query = (char*) malloc((strlen(query) + 1) * sizeof(char));
+    char* malloced_query = (char*) malloc((strlen(query)+ 1) * sizeof(char));
     strcpy(malloced_query, query);
 
     char* token = strtok(malloced_query, " ");
     while (token != NULL) {
+        int length = u8_strlen(token);
+        uint32_t* normalized_token = normalize_string_utf8(token, length);
+        uint32_t* stripped_token = replace_punctuation_marks(normalized_token, length);
+        free(normalized_token);
         // Do something with the part.
         if (collection->head == NULL) {
             collection->head = (QueryBreakdown*) malloc(sizeof(QueryBreakdown));
             collection->head->next = NULL;
             collection->head->head = (QueryBreakdownPart*) malloc(sizeof(QueryBreakdownPart));
-            collection->head->head->value = (char*) malloc((strlen(token) + 1) * sizeof(char));
-            strcpy(collection->head->head->value, token);
+            collection->head->head->value = (uint32_t*) malloc((length + 1) * sizeof(uint32_t));
+            memcpy(collection->head->head->value, stripped_token, (length + 1) * sizeof(uint32_t));
+            collection->head->head->length = length;
             collection->head->head->malloced_value = true;
             collection->head->head->next = NULL;
             collection->head->tail = collection->head->head;
@@ -56,13 +62,17 @@ QueryBreakdownCollection* create_query_breakdown_collection(char* query) {
                     // If next element is null, edit value so token is concatenated. Otherwise take over the value.
                     if (part_to_copy->next != NULL) {
                         new_part->value = part_to_copy->value;
+                        new_part->length = part_to_copy->length;
                         new_part->malloced_value = false;
                     } else {
-                        int length = strlen(part_to_copy->value) + strlen(token) + 2;
-                        new_part->value = (char*) malloc(length * sizeof(char));
-                        strcpy(new_part->value, part_to_copy->value);
-                        strcat(new_part->value, " ");
-                        strcat(new_part->value, token);
+                        int length_copy = part_to_copy->length + length + 2;
+                        new_part->value = (uint32_t*) calloc(length_copy, sizeof(uint32_t));
+                        memcpy(new_part->value, part_to_copy->value, part_to_copy->length * sizeof(uint32_t));
+                        new_part->value[part_to_copy->length] = ' ';
+                        for (int i = 0; i <= length; i++) {
+                            new_part->value[part_to_copy->length + 1 + i] = stripped_token[i];
+                        }
+                        new_part->length = length_copy - 1;
                         new_part->malloced_value = true;
                     }
                     if (copied_part != NULL) {
@@ -86,8 +96,9 @@ QueryBreakdownCollection* create_query_breakdown_collection(char* query) {
 
                 // Now edit the existing breakdown by adding a new part holding the current token.
                 QueryBreakdownPart* new_part = (QueryBreakdownPart*) malloc(sizeof(QueryBreakdownPart));
-                new_part->value = (char*) malloc((strlen(token) + 1) * sizeof(char));
-                strcpy(new_part->value, token);
+                new_part->value = (uint32_t*) malloc((length + 1) * sizeof(uint32_t));
+                memcpy(new_part->value, stripped_token, (length + 1) * sizeof(uint32_t));
+                new_part->length = length;
                 new_part->malloced_value = true;
                 new_part->next = NULL;
                 breakdown->tail->next = new_part;
@@ -101,6 +112,7 @@ QueryBreakdownCollection* create_query_breakdown_collection(char* query) {
             collection->tail->next = new_breakdowns_head;
             collection->tail = new_breakdowns_tail;
         }
+        free(stripped_token);
 
         token = strtok(NULL, " ");
     }
@@ -185,13 +197,13 @@ TotalMatchCollection* calculate_query_breakdown_total_matches(QueryBreakdown* br
             // Only calculate cost if entry has a chance to match.
             // This means |entry| <= |query| + 3 and |entry| >= |query| - 3,
             // and |entry| <= |query| + (1+|query|/3) and |entry| >= |query| - (1+|query|/3).
-            int entry_length = strlen(entry->normalized);
-            int query_length = strlen(part->value);
+            int entry_length = entry->length;
+            int query_length = part->length;
             double max_cost = get_max_cost(query_length);
 
             if (entry_length <= query_length + max_cost && entry_length >= query_length - max_cost) {
                 // Check if the database entry is a match by calculating its editing distance.
-                int cost = shiftAND_errors(part->value, entry->normalized);
+                int cost = shiftAND_errors(part->value, entry->normalized, part->length, entry->length);
                 if (cost != -1 && cost < 1 + query_length / 3) {
                     // If it is a match, add it as a new v_i to all currently existing total matches.
                     if (collection->head == NULL) {
@@ -281,7 +293,7 @@ void calculate_total_match_correctness(TotalMatch* total_match) {
     int denominator = 0;
     Match* match = total_match->head;
     while (match != NULL) {
-        int length_z = strlen(match->value->normalized);
+        int length_z = match->value->length;
         numerator += length_z - match->cost;
         denominator += length_z;
 
@@ -317,11 +329,13 @@ QueryCollection* read_queries() {
     char str[100];
     while (scanf("%[^\n]%*c", str) == 1) {
         // Create the query.
-        int length = strlen(str);
+        int char_length = strlen(str);
         Query* query = (Query*) malloc(sizeof(Query));
-        query->value = (char*) malloc((length + 1) * sizeof(char));
-        strcpy(query->value, replace_punctuation_marks(normalize_string(str)));
+        query->value = (char*) malloc((char_length + 1) * sizeof(char));
+        strcpy(query->value, str);
         query->next = NULL;
+
+        int length = u8_strlen(query->value);
 
         // Update query length statistics.
         if (collection->min_length == -1 || length < collection->min_length) {
