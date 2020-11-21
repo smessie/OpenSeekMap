@@ -34,9 +34,9 @@ int main(int argc, char** argv) {
     double longitude;
     double latitude;
     if (argc == 4) {
-        longitude = strtod(argv[2], NULL);
-        latitude = strtod(argv[3], NULL);
-        printf("Database: %s; Logitude: %f; Latitude: %f\n", database_name, longitude, latitude);
+        latitude = strtod(argv[2], NULL);
+        longitude = strtod(argv[3], NULL);
+        printf("Database: %s; Longitude: %f; Latitude: %f\n", database_name, longitude, latitude);
     }
 
     // Process query's
