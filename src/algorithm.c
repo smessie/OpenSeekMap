@@ -238,6 +238,8 @@ M* calculate_M_i(uint32_t* z, uint32_t* t, characteristic_vectors* cvs, M* M_pre
     int* temp_shifting_M_minus_1_column = calloc(length_z, sizeof(int));
     int* temp_M_minus_1_insert_char_column = calloc(length_z, sizeof(int));
     int* temp_M_minus_1_delete_char_column = calloc(length_z, sizeof(int));
+    int* temp_M_switch_char_column_minus_1 = calloc(length_z, sizeof(int));
+    int* temp_shifting_M_switch_char_column_minus_1 = calloc(length_z, sizeof(int));
 
     int* column = calloc(length_z, sizeof(int));
     for (int i = 0; i < length_z; i++) {
@@ -263,6 +265,8 @@ M* calculate_M_i(uint32_t* z, uint32_t* t, characteristic_vectors* cvs, M* M_pre
             temp_shifting_M_minus_1_column[i] = M_minus_1_column->value[i];
             temp_M_minus_1_insert_char_column[i] = M_minus_1_column->next->value[i];
             temp_M_minus_1_delete_char_column[i] = M_minus_1_column->value[i];
+            temp_M_switch_char_column_minus_1[i] = column[i];
+            temp_shifting_M_switch_char_column_minus_1[i] = column[i];
         }
         // This is where the magic happens :tada: *take 2*
         // We are not going to OR with (1,0,...,0) as we already use a SHIFT that inserts a 1.
@@ -273,6 +277,14 @@ M* calculate_M_i(uint32_t* z, uint32_t* t, characteristic_vectors* cvs, M* M_pre
         OR(temp_shifting_M_minus_1_column, column, column, length_z);
         OR(temp_M_minus_1_insert_char_column, column, column, length_z);
         OR(temp_M_minus_1_delete_char_column, column, column, length_z);
+
+        // Switch 2 chars from position: ... OR ( (C[t[j-1]] & shift(M[][j-1])) & shift(C[t[j]] & M[][j-1]))
+        shift(temp_shifting_M_switch_char_column_minus_1, length_z, 0);
+        AND(C(cvs, t[j-1]), temp_shifting_M_switch_char_column_minus_1, temp_shifting_M_switch_char_column_minus_1, length_z);
+        AND(C(cvs, t[j]), temp_M_switch_char_column_minus_1, temp_M_switch_char_column_minus_1, length_z);
+        shift(temp_M_switch_char_column_minus_1, length_z, 0);
+        AND(temp_shifting_M_switch_char_column_minus_1, temp_M_switch_char_column_minus_1, temp_M_switch_char_column_minus_1, length_z);
+        OR(temp_M_switch_char_column_minus_1, column, column, length_z);
 
         // Write back the resulting column to new alloc.
         int* write_back_column = calloc(length_z, sizeof(int));
@@ -295,6 +307,8 @@ M* calculate_M_i(uint32_t* z, uint32_t* t, characteristic_vectors* cvs, M* M_pre
     free(temp_shifting_M_minus_1_column);
     free(temp_M_minus_1_insert_char_column);
     free(temp_M_minus_1_delete_char_column);
+    free(temp_M_switch_char_column_minus_1);
+    free(temp_shifting_M_switch_char_column_minus_1);
     free(column);
 
     return matrix;

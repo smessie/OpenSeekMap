@@ -300,10 +300,10 @@ void test_M_i(int* passed, int* failed) {
             {1, 1, 0, 0, 0, 0, 0}, /* g */
             {1, 1, 1, 0, 0, 0, 0}, /* e */
             {0, 1, 1, 1, 0, 0, 0}, /* k */
-            {0, 0, 1, 0, 0, 0, 0}, /* r */
-            {0, 0, 0, 0, 0, 0, 0}, /* e */
-            {0, 0, 0, 0, 0, 0, 0}, /* u */
-            {0, 0, 0, 0, 0, 0, 0}  /* n */
+            {0, 0, 1, 1, 0, 0, 0}, /* r */
+            {0, 0, 0, 0, 1, 0, 0}, /* e */
+            {0, 0, 0, 0, 0, 1, 0}, /* u */
+            {0, 0, 0, 0, 0, 0, 1}  /* n */
     };
     bitvector* testing_column_werkeun = m_2->head;
     for (int i = 0; i < m_2->n; i++) {
@@ -322,9 +322,9 @@ void test_M_i(int* passed, int* failed) {
             {1, 1, 1, 1, 0, 0, 0}, /* e */
             {1, 1, 1, 1, 1, 0, 0}, /* k */
             {0, 1, 1, 1, 1, 0, 0}, /* r */
-            {0, 0, 1, 1, 1, 0, 0}, /* e */
-            {0, 0, 0, 0, 0, 1, 0}, /* u */
-            {0, 0, 0, 0, 0, 0, 1}  /* n */
+            {0, 0, 1, 1, 1, 1, 0}, /* e */
+            {0, 0, 0, 0, 1, 1, 1}, /* u */
+            {0, 0, 0, 0, 0, 1, 1}  /* n */
     };
     testing_column_werkeun = m_3->head;
     for (int i = 0; i < m_2->n; i++) {
@@ -414,7 +414,7 @@ void test_shiftAND_errors(int* passed, int* failed) {
     temp2 = (uint32_t*) malloc(8 * sizeof(uint32_t));
     u8_toucs(temp2, 8, "gekreun", -1);
 
-    if (shiftAND_errors(temp, temp2, 6, 7) == -1) {
+    if (shiftAND_errors(temp, temp2, 6, 7) == 3) {
         (*passed)++;
     } else {
         (*failed)++;
@@ -426,7 +426,7 @@ void test_shiftAND_errors(int* passed, int* failed) {
     temp = (uint32_t*) malloc(8 * sizeof(uint32_t));
     u8_toucs(temp, 8, "werkeun", -1);
 
-    if (shiftAND_errors(temp, temp2, 7, 7) == 3) {
+    if (shiftAND_errors(temp, temp2, 7, 7) == 2) {
         (*passed)++;
     } else {
         (*failed)++;
@@ -463,6 +463,22 @@ void test_shiftAND_errors(int* passed, int* failed) {
     } else {
         (*failed)++;
         perror("shiftAND_errors test 6 failed!");
+    }
+
+    free(temp);
+    free(temp2);
+
+    temp = (uint32_t*) malloc(10 * sizeof(uint32_t));
+    u8_toucs(temp, 10, "huisbazin", -1);
+
+    temp2 = (uint32_t*) malloc(10 * sizeof(uint32_t));
+    u8_toucs(temp2, 10, "giusbaizn", -1);
+
+    if (shiftAND_errors(temp, temp2, 9, 9) == 3) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 7 failed!");
     }
 
     free(temp);
