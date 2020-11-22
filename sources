@@ -8,3 +8,4 @@ query_handler.c
 haversine_formula.c
 sort_util.c
 synergy.c
+main.c

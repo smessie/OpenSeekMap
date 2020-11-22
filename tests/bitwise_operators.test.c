@@ -4,12 +4,12 @@
 
 #include "bitwise_operators.test.h"
 
-#include "../src/bitwise_operators.h"
-#include "../src/strings/string_util.h"
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+
+#include "../src/bitwise_operators.h"
+#include "../src/strings/string_util.h"
 
 void run_bitwise_operators_tests() {
     int passed = 0;

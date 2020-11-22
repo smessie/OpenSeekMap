@@ -3,6 +3,7 @@
 //
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "algorithm.test.h"
 #include "bitwise_operators.test.h"
 #include "query_handler.test.h"

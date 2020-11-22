@@ -6,11 +6,12 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "accents.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <stddef.h>
+
+#include "accents.h"
 #include "utf8.h"
 
 uint32_t* normalize_string_utf8(char* string, int length) {
@@ -63,7 +64,6 @@ void print_result(TotalMatch* total_match) {
         return;
     }
     Match* match = total_match->representative;
-    printf("\n");
     Match* part = total_match->head;
     while (part != NULL) {
         printf("%s ", part->value->name);

@@ -10,8 +10,6 @@
 #include "strings/string_util.h"
 
 int main(int argc, char** argv) {
-    printf("Project AD3 ~ Welcome to OpenSeekMap!\n");
-
     // Validate function call
     if (argc != 2 && argc != 4) {
         printf("Usage: ./openseekmap <database file> [longitude] [latitude] < <query>\n");
@@ -24,7 +22,6 @@ int main(int argc, char** argv) {
     // Load database
     char database_name[64];
     strcpy(database_name, argv[1]);
-    printf("Loading database '%s'...\n", database_name);
     Database* database = load_database(database_name, qc->max_length);
 
     // Database is loaded, so report to user by sending question mark.
@@ -36,7 +33,6 @@ int main(int argc, char** argv) {
     if (argc == 4) {
         latitude = strtod(argv[2], NULL);
         longitude = strtod(argv[3], NULL);
-        printf("Database: %s; Longitude: %f; Latitude: %f\n", database_name, longitude, latitude);
     }
 
     // Process query's

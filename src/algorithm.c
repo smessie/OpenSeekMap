@@ -7,10 +7,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "strings/utf8.h"
 
 #include "bitwise_operators.h"
-#include "../src/strings/string_util.h"
+#include "strings/utf8.h"
+#include "strings/string_util.h"
 
 bool shiftAND(char* z, char* t) {
     // Initialize variables

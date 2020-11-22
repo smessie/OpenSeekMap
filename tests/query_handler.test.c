@@ -4,14 +4,14 @@
 
 #include "query_handler.test.h"
 
-#include "../src/query_handler.h"
-#include "../src/strings/utf8.h"
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+
+#include "../src/query_handler.h"
+#include "../src/strings/utf8.h"
 
 void run_query_handler_tests() {
     int passed = 0;
