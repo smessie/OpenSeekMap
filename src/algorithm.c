@@ -88,11 +88,7 @@ int shiftAND_errors(uint32_t* z, uint32_t* t, int length_z, int length_t) {
 }
 
 bool check_for_match(M* m) {
-    bitvector* column = m->head;
-    for (int i = 0; i < m->n - 1; i++) {
-        column = column->next;
-    }
-    if (column->value[m->m - 1] == 1) {
+    if (m->tail->value[m->m - 1] == 1) {
         // There was a 1 on the last row and column so we found a match.
         return true;
     }
@@ -171,6 +167,7 @@ M* calculate_M(uint32_t* z, uint32_t* t, characteristic_vectors* cvs, int length
     // Initialize variables and struct
     M* matrix = (M*) malloc(sizeof(M));
     matrix->head = NULL;
+    matrix->tail = NULL;
     matrix->m = length_z;
     matrix->n = length_t;
     int* column = calloc(length_z, sizeof(int));
@@ -210,6 +207,7 @@ M* calculate_M(uint32_t* z, uint32_t* t, characteristic_vectors* cvs, int length
         entry->next = new_entry;
         entry = new_entry;
     }
+    matrix->tail = entry;
     free(column);
 
     return matrix;
@@ -302,6 +300,7 @@ M* calculate_M_i(uint32_t* z, uint32_t* t, characteristic_vectors* cvs, M* M_pre
         // Update dependency variables
         M_minus_1_column = M_minus_1_column->next;
     }
+    matrix->tail = entry;
 
     // Clean up our local variables
     free(temp_shifting_M_minus_1_column);

@@ -22,6 +22,7 @@ typedef struct characteristic_vectors_t {
 
 typedef struct M_t {
     bitvector* head;
+    bitvector* tail;
     int m;
     int n;
 } M;
