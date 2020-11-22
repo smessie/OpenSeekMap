@@ -64,11 +64,6 @@ void print_result(TotalMatch* total_match) {
         return;
     }
     Match* match = total_match->representative;
-    Match* part = total_match->head;
-    while (part != NULL) {
-        printf("%s ", part->value->name);
-        part = part->next;
-    }
     // Valgrind in docker requires (%lu) instead of (%llu).
-    printf("(%lu)\ngeo:%f,%f\n~\n", match->value->id, match->value->latitude, match->value->longitude);
+    printf("%s (%lu)\ngeo:%f,%f\n~\n", match->value->name, match->value->id, match->value->latitude, match->value->longitude);
 }
