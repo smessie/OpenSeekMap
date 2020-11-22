@@ -204,7 +204,7 @@ TotalMatchCollection* calculate_query_breakdown_total_matches(QueryBreakdown* br
             if (entry_length <= query_length + max_cost && entry_length >= query_length - max_cost) {
                 // Check if the database entry is a match by calculating its editing distance.
                 int cost = shiftAND_errors(part->value, entry->normalized, part->length, entry->length);
-                if (cost != -1 && cost < 1 + query_length / 3) {
+                if (cost != -1 && cost <= 1 + query_length / 3) {
                     // If it is a match, add it as a new v_i to all currently existing total matches.
                     if (collection->head == NULL) {
                         // If this match is for the first part, do not extend the current total matches (because there are none),
