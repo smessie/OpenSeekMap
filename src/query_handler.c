@@ -195,16 +195,17 @@ TotalMatchCollection* calculate_query_breakdown_total_matches(QueryBreakdown* br
         Entry* entry = database->head;
         while (entry != NULL) {
             // Only calculate cost if entry has a chance to match.
-            // This means |entry| <= |query| + 3 and |entry| >= |query| - 3,
-            // and |entry| <= |query| + (1+|query|/3) and |entry| >= |query| - (1+|query|/3).
+            // This means absolute value of |entry| - |query| must be smaller than 3,
+            // and absolute value of |entry| - |query| <= (1+|query|/3).
             int entry_length = entry->length;
             int query_length = part->length;
             double max_cost = get_max_cost(query_length);
 
-            if (entry_length <= query_length + max_cost && entry_length >= query_length - max_cost) {
+            int diff = abs(entry_length - query_length);
+            if (diff <= max_cost && diff < 3) {
                 // Check if the database entry is a match by calculating its editing distance.
                 int cost = shiftAND_errors(part->value, entry->normalized, part->length, entry->length);
-                if (cost != -1 && cost <= 1 + query_length / 3) {
+                if (cost != -1 && cost <= max_cost) {
                     // If it is a match, add it as a new v_i to all currently existing total matches.
                     if (collection->head == NULL) {
                         // If this match is for the first part, do not extend the current total matches (because there are none),
@@ -289,8 +290,8 @@ void add_match_to_total_match(TotalMatch* total_match, Match* match) {
 }
 
 void calculate_total_match_correctness(TotalMatch* total_match) {
-    int numerator = 0;
-    int denominator = 0;
+    double numerator = 0;
+    double denominator = 0;
     Match* match = total_match->head;
     while (match != NULL) {
         int length_z = match->value->length;
@@ -370,7 +371,7 @@ void free_query_collection(QueryCollection* collection) {
 }
 
 double get_max_cost(int query_length) {
-    double max_cost = 1 + query_length / 3;
+    double max_cost = 1 + ((double) query_length / 3.0);
     if (max_cost > 3) {
         max_cost = 3;
     }

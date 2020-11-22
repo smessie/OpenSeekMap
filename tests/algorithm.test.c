@@ -382,6 +382,45 @@ void test_M_i(int* passed, int* failed) {
     free_characteristic_vectors(cvs);
     free(temp);
     free(temp2);
+
+    size = 5;
+
+    temp = (uint32_t*) malloc((size + 1) * sizeof(uint32_t));
+    u8_toucs(temp, size + 1, "bruhe", -1);
+
+    temp2 = (uint32_t*) malloc(7 * sizeof(uint32_t));
+    u8_toucs(temp2, 7, "brugge", -1);
+
+    cvs = calculate_characteristic_vectors(temp, size);
+    m_0 = calculate_M(temp, temp2, cvs, 5, 6);
+    m_1 = calculate_M_i(temp, temp2, cvs, m_0, 5, 6);
+    m_2 = calculate_M_i(temp, temp2, cvs, m_1, 5 ,6);
+    int expected_bruhe[6][5] = {
+            {1, 1, 1, 0, 0}, /* b */
+            {1, 1, 1, 1, 0}, /* r */
+            {1, 1, 1, 1, 1}, /* u */
+            {0, 1, 1, 1, 1}, /* g */
+            {0, 0, 1, 1, 1}, /* g */
+            {0, 0, 0, 0, 1}  /* e */
+    };
+    bitvector* testing_column_bruhe = m_2->head;
+    for (int i = 0; i < m_2->n; i++) {
+        if (equal(testing_column_bruhe->value, expected_bruhe[i], size) == false) {
+            (*failed)++;
+            perror("M z=bruhe, t=brugge test failed!");
+            break;
+        }
+        testing_column_bruhe = testing_column_bruhe->next;
+    }
+    if (testing_column_bruhe == NULL) {
+        (*passed)++;
+    }
+    free_M(m_0);
+    free_M(m_1);
+    free_M(m_2);
+    free_characteristic_vectors(cvs);
+    free(temp);
+    free(temp2);
 }
 
 void test_shiftAND_errors(int* passed, int* failed) {
@@ -479,6 +518,22 @@ void test_shiftAND_errors(int* passed, int* failed) {
     } else {
         (*failed)++;
         perror("shiftAND_errors test 7 failed!");
+    }
+
+    free(temp);
+    free(temp2);
+
+    temp = (uint32_t*) malloc(6 * sizeof(uint32_t));
+    u8_toucs(temp, 6, "bruhe", -1);
+
+    temp2 = (uint32_t*) malloc(7 * sizeof(uint32_t));
+    u8_toucs(temp2, 7, "brugge", -1);
+
+    if (shiftAND_errors(temp, temp2, 5, 6) == 2) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 8 failed!");
     }
 
     free(temp);

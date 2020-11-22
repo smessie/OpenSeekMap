@@ -14,7 +14,7 @@ double calculate_synergy(Match* match_1, Match* match_2) {
     if (extent_2 > extent) {
         extent = extent_2;
     }
-    int synergy = extent / d_geo(match_1->value->latitude, match_1->value->longitude, match_2->value->latitude,
+    double synergy = extent / d_geo(match_1->value->latitude, match_1->value->longitude, match_2->value->latitude,
                                  match_2->value->longitude);
     synergy *= synergy;
     if (synergy > 2) {

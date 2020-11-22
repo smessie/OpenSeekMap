@@ -17,7 +17,9 @@ void calculate_best_matches(BestMatches* best_matches, TotalMatchCollection* col
         Match* max = get_max_rank(total_match);
         total_match->representative = max;
 
-        double value = 0.2 * total_match->correctness + 0.7 * total_match->synergy + 0.1 * max->value->rank / 30;
+        double max_rank = max->value->rank / 30.0;
+
+        double value = 0.2 * total_match->correctness + 0.7 * total_match->synergy + 0.1 * max_rank;
         replace_with_if_better(best_matches, total_match, value);
 
         total_match = total_match->next;
@@ -39,8 +41,9 @@ void calculate_best_matches_geo(BestMatches* best_matches, TotalMatchCollection*
         } else if (dist_value > 1) {
             dist_value = 1;
         }
+        double max_rank = max->value->rank / 30.0;
 
-        double value = 0.15 * total_match->correctness + 0.55 * total_match->synergy + 0.15 * max->value->rank / 30 +
+        double value = 0.15 * total_match->correctness + 0.55 * total_match->synergy + 0.15 * max_rank +
                        0.15 * dist_value;
         replace_with_if_better(best_matches, total_match, value);
 

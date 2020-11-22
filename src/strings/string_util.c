@@ -24,7 +24,7 @@ uint32_t* normalize_string_utf8(char* string, int length) {
     for (int j = 0; j < length; j++) {
         c = u8_nextchar(malloced_string, &i);
         uint32_t normalized_char_int = remove_accent(c);
-        normalized[j] = normalized_char_int;
+        normalized[j] = tolower(normalized_char_int);
     }
     normalized[length] = '\0';
     free(malloced_string);
