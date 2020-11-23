@@ -5,9 +5,7 @@
 #include "query_handler.test.h"
 
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
-#include <stdint.h>
 #include <stdlib.h>
 
 #include "../src/query_handler.h"
@@ -30,47 +28,47 @@ void test_create_query_breakdown_collection(int* passed, int* failed) {
     int count = 0;
 
     uint32_t* temp_de = (uint32_t*) malloc(3 * sizeof(uint32_t));
-    u8_toucs(temp_de, 3, "De", -1);
+    u8_toucs(temp_de, 3, "de", -1);
     uint32_t* temp_de_sterre = (uint32_t*) malloc(10 * sizeof(uint32_t));
-    u8_toucs(temp_de_sterre, 10, "De Sterre", -1);
+    u8_toucs(temp_de_sterre, 10, "de sterre", -1);
     uint32_t* temp_sterre = (uint32_t*) malloc(7 * sizeof(uint32_t));
-    u8_toucs(temp_sterre, 7, "Sterre", -1);
+    u8_toucs(temp_sterre, 7, "sterre", -1);
     uint32_t* temp_gent = (uint32_t*) malloc(5 * sizeof(uint32_t));
-    u8_toucs(temp_gent, 5, "Gent", -1);
+    u8_toucs(temp_gent, 5, "gent", -1);
     uint32_t* temp_sterre_gent = (uint32_t*) malloc(12 * sizeof(uint32_t));
-    u8_toucs(temp_sterre_gent, 12, "Sterre Gent", -1);
+    u8_toucs(temp_sterre_gent, 12, "sterre gent", -1);
     uint32_t* temp_de_sterre_gent = (uint32_t*) malloc(15 * sizeof(uint32_t));
-    u8_toucs(temp_de_sterre_gent, 15, "De Sterre Gent", -1);
+    u8_toucs(temp_de_sterre_gent, 15, "de sterre gent", -1);
 
 
-    QueryBreakdownCollection* collection = create_query_breakdown_collection("De Sterre Gent");
+    QueryBreakdownCollection* collection = create_query_breakdown_collection("de sterre gent");
     QueryBreakdown* breakdown = collection->head;
     while (breakdown != NULL) {
         if (breakdown->head == NULL) {
             continue;
         }
         count++;
-        if (memcmp(breakdown->head->value, temp_de, 3 * sizeof(uint32_t)) == 0) {
+        if (breakdown->head->length == 2 && equal_value(breakdown->head->value, temp_de, 2) == true) {
             if (breakdown->head->next != NULL) {
-                if (memcmp(breakdown->head->next->value, temp_sterre, 7 * sizeof(uint32_t)) == 0) {
-                    if (breakdown->head->next->next != NULL && memcmp(breakdown->head->next->next->value, temp_gent, 5 * sizeof(uint32_t)) == 0) {
+                if (breakdown->head->next->length == 6 && equal_value(breakdown->head->next->value, temp_sterre, 6) == true) {
+                    if (breakdown->head->next->next != NULL && breakdown->head->next->next->length == 4 && equal_value(breakdown->head->next->next->value, temp_gent, 4) == true) {
                         if (breakdown->head->next->next->next == NULL) {
                             de__sterre__gent++;
                         }
                     }
-                } else if (memcmp(breakdown->head->next->value, temp_sterre_gent, 12 * sizeof(uint32_t)) == 0) {
+                } else if (breakdown->head->next->length == 11 && equal_value(breakdown->head->next->value, temp_sterre_gent, 11) == true) {
                     if (breakdown->head->next->next == NULL) {
                         de__sterre_gent++;
                     }
                 }
             }
-        } else if (memcmp(breakdown->head->value, temp_de_sterre, 10 * sizeof(uint32_t)) == 0) {
-            if (breakdown->head->next != NULL && memcmp(breakdown->head->next->value, temp_gent, 5 * sizeof(uint32_t)) == 0) {
+        } else if (breakdown->head->length == 9 && equal_value(breakdown->head->value, temp_de_sterre, 9) == true) {
+            if (breakdown->head->next != NULL && breakdown->head->next->length == 4 && equal_value(breakdown->head->next->value, temp_gent, 4) == true) {
                 if (breakdown->head->next->next == NULL) {
                     de_sterre__gent++;
                 }
             }
-        } else if (memcmp(breakdown->head->value, temp_de_sterre_gent, 15 * sizeof(uint32_t)) == 0) {
+        } else if (breakdown->head->length == 14 && equal_value(breakdown->head->value, temp_de_sterre_gent, 14) == true) {
             if (breakdown->head->next == NULL) {
                 de_sterre_gent++;
             }
@@ -112,4 +110,13 @@ void test_create_query_breakdown_collection(int* passed, int* failed) {
         return;
     }
     (*passed)++;
+}
+
+bool equal_value(uint32_t* got, uint32_t* expected, int length) {
+    for (int i = 0; i < length; i++) {
+        if (got[i] != expected[i]) {
+            return false;
+        }
+    }
+    return true;
 }
