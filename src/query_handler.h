@@ -96,7 +96,7 @@ void free_total_match(TotalMatch* total_match);
 
 void free_total_match_collection(TotalMatchCollection* collection);
 
-TotalMatchCollection* calculate_query_breakdown_total_matches(QueryBreakdown* breakdown, Database* database);
+TotalMatchCollection* calculate_query_breakdown_total_matches(QueryBreakdown* breakdown, Database* database, int algorithm);
 
 TotalMatch* duplicate_total_match(TotalMatch* source);
 

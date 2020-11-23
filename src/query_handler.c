@@ -178,7 +178,7 @@ void free_total_match_collection(TotalMatchCollection* collection) {
     free(collection);
 }
 
-TotalMatchCollection* calculate_query_breakdown_total_matches(QueryBreakdown* breakdown, Database* database) {
+TotalMatchCollection* calculate_query_breakdown_total_matches(QueryBreakdown* breakdown, Database* database, int algorithm) {
     TotalMatchCollection* collection = (TotalMatchCollection*) malloc(sizeof(TotalMatchCollection));
     collection->head = NULL;
     collection->tail = NULL;
@@ -205,7 +205,14 @@ TotalMatchCollection* calculate_query_breakdown_total_matches(QueryBreakdown* br
             int diff = abs(entry_length - query_length);
             if (diff <= max_cost && diff < 3) {
                 // Check if the database entry is a match by calculating its editing distance.
-                int cost = shiftAND_errors(part->value, entry->normalized, part->length, entry->length);
+                int cost;
+                if (algorithm == 0) {
+                    cost = edit_distance(part->value, entry->normalized, part->length, entry->length);
+                } else if (algorithm == 1) {
+                    cost = shiftAND_errors(part->value, entry->normalized, part->length, entry->length);
+                } else {
+                    cost = shiftAND_errors_legacy(part->value, entry->normalized, part->length, entry->length);
+                }
                 if (cost != -1 && cost <= max_cost) {
                     // If it is a match, add it as a new v_i to all currently existing total matches.
                     if (collection->head == NULL) {

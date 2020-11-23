@@ -17,4 +17,6 @@ void bitvector_to_string(int bitvector[], int size, char* dest);
 
 void print_result(TotalMatch* total_match);
 
+void print_usage();
+
 #endif //AD3_PROJECT_STRING_UTIL_H

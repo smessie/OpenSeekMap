@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <getopt.h>
+#include <ctype.h>
 
 #include "database.h"
 #include "query_handler.h"
@@ -11,8 +13,44 @@
 
 int main(int argc, char** argv) {
     // Validate function call
-    if (argc != 2 && argc != 4) {
-        printf("Usage: ./openseekmap <database file> [longitude] [latitude] < <query>\n");
+    if (argc != 2 && argc != 4 && argc != 6) {
+        print_usage();
+        return EXIT_FAILURE;
+    }
+
+    // Handle algorithm options.
+    int argument_boost = 0;
+    int algorithm = 0;
+    int c;
+    while (1) {
+        struct option long_options[] = {
+                {"algorithm", required_argument, 0, 'a'},
+                {0, 0, 0, 0}
+        };
+        int option_index = 0;
+        c = getopt_long(argc, argv, "a:", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+        switch (c) {
+            case 0:
+                break;
+            case 'a':
+                if (isdigit(*optarg)) {
+                    algorithm = atoi(optarg);
+                    argument_boost = 2;
+                } else {
+                    print_usage();
+                    return EXIT_FAILURE;
+                }
+                break;
+            default:
+                abort();
+        }
+    }
+    if (algorithm < 0 || algorithm > 2) {
+        print_usage();
         return EXIT_FAILURE;
     }
 
@@ -21,7 +59,7 @@ int main(int argc, char** argv) {
 
     // Load database
     char database_name[64];
-    strcpy(database_name, argv[1]);
+    strcpy(database_name, argv[1 + argument_boost]);
     Database* database = load_database(database_name, qc->max_length);
 
     // Database is loaded, so report to user by sending question mark.
@@ -30,9 +68,9 @@ int main(int argc, char** argv) {
     // Get optional longitude and latitude
     double longitude;
     double latitude;
-    if (argc == 4) {
-        latitude = strtod(argv[2], NULL);
-        longitude = strtod(argv[3], NULL);
+    if (argc == 4 + argument_boost) {
+        latitude = strtod(argv[2 + argument_boost], NULL);
+        longitude = strtod(argv[3 + argument_boost], NULL);
     }
 
     // Process query's
@@ -45,11 +83,11 @@ int main(int argc, char** argv) {
         QueryBreakdown* breakdown = qbc->head;
         while (breakdown != NULL) {
             // Each QueryBreakdown has a collection of total matches.
-            TotalMatchCollection* tmc = calculate_query_breakdown_total_matches(breakdown, database);
+            TotalMatchCollection* tmc = calculate_query_breakdown_total_matches(breakdown, database, algorithm);
             calculate_all_total_matches_correctness(tmc);
             calculate_all_total_matches_synergy(tmc);
 
-            if (argc == 4) {
+            if (argc == 4 + argument_boost) {
                 calculate_best_matches_geo(best_matches, tmc, latitude, longitude);
             } else {
                 calculate_best_matches(best_matches, tmc);

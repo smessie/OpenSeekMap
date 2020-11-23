@@ -67,3 +67,9 @@ void print_result(TotalMatch* total_match) {
     // Valgrind in docker requires (%lu) instead of (%llu).
     printf("%s (%lu)\ngeo:%f,%f\n~\n", match->value->name, match->value->id, match->value->latitude, match->value->longitude);
 }
+
+void print_usage() {
+    printf("### WELCOME TO OPENSEEKMAP ###\n");
+    printf("Usage: ./openseekmap <database file> [longitude] [latitude] [--algorithm id] < <query>\n");
+    printf("Possible algorithms:\n- 0. edit distance [default]\n- 1. shiftAND with errors\n- 2. shiftAND with errors legacy\n\n");
+}
