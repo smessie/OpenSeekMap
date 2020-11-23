@@ -2,3 +2,4 @@ test.c
 algorithm.test.c
 bitwise_operators.test.c
 query_handler.test.c
+algorithm2.test.c

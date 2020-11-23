@@ -9,3 +9,4 @@ query_handler.c
 haversine_formula.c
 sort_util.c
 synergy.c
+algorithm2.c
