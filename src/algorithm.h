@@ -27,6 +27,13 @@ typedef struct M_t {
     int n;
 } M;
 
+/**
+ * Checks if a search string is contained in a text.
+ * Uses the shiftAND algorithm.
+ * @param z - The search string.
+ * @param t - Text to be searched in.
+ * @return Whether or net the search string is found in the text.
+ */
 bool shiftAND(char* z, char* t);
 
 /**
@@ -60,6 +67,23 @@ int* C(characteristic_vectors* cvs, uint32_t x);
  */
 void free_characteristic_vectors(characteristic_vectors* cvs);
 
+/*
+ * ~~ LEGACY CODE ~~
+ * Following code is from before the rewrite of the algorithm implementation which uses too much mallocs and saving
+ * in structs causing the runtime to be dramatically longer.
+ */
+
+/**
+ * Checks if a search string is contained in a text with an edit distance of 3 or less.
+ * Uses an algorithm based on shiftAND and edit distance.
+ * @param z - The search string.
+ * @param t - Text to be searched in.
+ * @return Cost to find the search string in the text. -1 for infinity (=not found). -1 ≤ cost ≤ 3.
+ */
+int shiftAND_errors_legacy(uint32_t* z, uint32_t* t, int length_z, int length_t);
+
+bool check_for_match(M* m);
+
 /**
  * Generate a linked list of all bitvectors which indicates of a (prefix of a) search string matches a substring of a text.
  * Adjusted so that the whole text should match.
@@ -91,7 +115,5 @@ void free_M(M* matrix);
  * @return a pointer to the linked list matrix M.
  */
 M* calculate_M_i(uint32_t* z, uint32_t* t, characteristic_vectors* cvs, M* M_prev, int length_z, int length_t);
-
-bool check_for_match(M* m);
 
 #endif //AD3_PROJECT_ALGORITHM_H

@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #include "algorithm.h"
+#include "algorithm2.h"
 #include "strings/string_util.h"
 #include "strings/utf8.h"
 

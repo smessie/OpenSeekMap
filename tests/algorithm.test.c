@@ -28,6 +28,8 @@ void run_algorithm_tests() {
 
     test_shiftAND_errors(&passed, &failed);
 
+    test_shiftAND_errors_legacy(&passed, &failed);
+
     printf("\nCompleted algorithm tests with %d passes and %d failures.\n", passed, failed);
 }
 
@@ -127,6 +129,139 @@ void test_shiftAND(int* passed, int* failed) {
         (*failed)++;
         perror("shiftAND test 4 failed!");
     }
+}
+
+void test_shiftAND_errors(int* passed, int* failed) {
+    uint32_t* temp = (uint32_t*) malloc(5 * sizeof(uint32_t));
+    u8_toucs(temp, 5, "zoek", -1);
+
+    uint32_t* temp2 = (uint32_t*) malloc(6 * sizeof(uint32_t));
+    u8_toucs(temp2, 6, "zoeck", -1);
+
+    if (shiftAND_errors(temp, temp, 4, 4) == 0) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 1 failed!");
+    }
+
+    if (shiftAND_errors(temp2, temp, 5, 4) == 1) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 2 failed!");
+    }
+
+    free(temp);
+    free(temp2);
+
+    temp = (uint32_t*) malloc(7 * sizeof(uint32_t));
+    u8_toucs(temp, 7, "werken", -1);
+
+    temp2 = (uint32_t*) malloc(8 * sizeof(uint32_t));
+    u8_toucs(temp2, 8, "gekreun", -1);
+
+    if (shiftAND_errors(temp, temp2, 6, 7) == 3) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 3 failed!");
+    }
+
+    free(temp);
+
+    temp = (uint32_t*) malloc(8 * sizeof(uint32_t));
+    u8_toucs(temp, 8, "werkeun", -1);
+
+    if (shiftAND_errors(temp, temp2, 7, 7) == 2) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 4 failed!");
+    }
+
+    free(temp);
+    free(temp2);
+
+    temp = (uint32_t*) malloc(4 * sizeof(uint32_t));
+    u8_toucs(temp, 4, "ans", -1);
+
+    temp2 = (uint32_t*) malloc(5 * sizeof(uint32_t));
+    u8_toucs(temp2, 5, "anan", -1);
+
+    if (shiftAND_errors(temp, temp2, 3, 4) == 2) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 5 failed!");
+    }
+
+    free(temp);
+    free(temp2);
+
+    temp = (uint32_t*) malloc(7 * sizeof(uint32_t));
+    u8_toucs(temp, 7, "zoeven", -1);
+
+    temp2 = (uint32_t*) malloc(8 * sizeof(uint32_t));
+    u8_toucs(temp2, 8, "zoekken", -1);
+
+    if (shiftAND_errors(temp, temp2, 6, 7) == 2) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 6 failed!");
+    }
+
+    free(temp);
+    free(temp2);
+
+    temp = (uint32_t*) malloc(10 * sizeof(uint32_t));
+    u8_toucs(temp, 10, "huisbazin", -1);
+
+    temp2 = (uint32_t*) malloc(10 * sizeof(uint32_t));
+    u8_toucs(temp2, 10, "giusbaizn", -1);
+
+    if (shiftAND_errors(temp, temp2, 9, 9) == 3) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 7 failed!");
+    }
+
+    free(temp);
+    free(temp2);
+
+    temp = (uint32_t*) malloc(6 * sizeof(uint32_t));
+    u8_toucs(temp, 6, "bruhe", -1);
+
+    temp2 = (uint32_t*) malloc(7 * sizeof(uint32_t));
+    u8_toucs(temp2, 7, "brugge", -1);
+
+    if (shiftAND_errors(temp, temp2, 5, 6) == 2) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 8 failed!");
+    }
+
+    free(temp);
+    free(temp2);
+
+    temp = (uint32_t*) malloc(7 * sizeof(uint32_t));
+    u8_toucs(temp, 7, "rechts", -1);
+
+    temp2 = (uint32_t*) malloc(7 * sizeof(uint32_t));
+    u8_toucs(temp2, 7, "erchst", -1);
+
+    if (shiftAND_errors(temp, temp2, 6, 6) == 2) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors test 9 failed!");
+    }
+
+    free(temp);
+    free(temp2);
 }
 
 void test_M(int* passed, int* failed) {
@@ -423,7 +558,7 @@ void test_M_i(int* passed, int* failed) {
     free(temp2);
 }
 
-void test_shiftAND_errors(int* passed, int* failed) {
+void test_shiftAND_errors_legacy(int* passed, int* failed) {
     uint32_t* temp = (uint32_t*) malloc(5 * sizeof(uint32_t));
     u8_toucs(temp, 5, "zoek", -1);
 
@@ -434,14 +569,14 @@ void test_shiftAND_errors(int* passed, int* failed) {
         (*passed)++;
     } else {
         (*failed)++;
-        perror("shiftAND_errors test 1 failed!");
+        perror("shiftAND_errors_legacy test 1 failed!");
     }
 
     if (shiftAND_errors(temp2, temp, 5, 4) == 1) {
         (*passed)++;
     } else {
         (*failed)++;
-        perror("shiftAND_errors test 2 failed!");
+        perror("shiftAND_errors_legacy test 2 failed!");
     }
 
     free(temp);
@@ -457,7 +592,7 @@ void test_shiftAND_errors(int* passed, int* failed) {
         (*passed)++;
     } else {
         (*failed)++;
-        perror("shiftAND_errors test 3 failed!");
+        perror("shiftAND_errors_legacy test 3 failed!");
     }
 
     free(temp);
@@ -469,7 +604,7 @@ void test_shiftAND_errors(int* passed, int* failed) {
         (*passed)++;
     } else {
         (*failed)++;
-        perror("shiftAND_errors test 4 failed!");
+        perror("shiftAND_errors_legacy test 4 failed!");
     }
 
     free(temp);
@@ -485,7 +620,7 @@ void test_shiftAND_errors(int* passed, int* failed) {
         (*passed)++;
     } else {
         (*failed)++;
-        perror("shiftAND_errors test 5 failed!");
+        perror("shiftAND_errors_legacy test 5 failed!");
     }
 
     free(temp);
@@ -501,7 +636,7 @@ void test_shiftAND_errors(int* passed, int* failed) {
         (*passed)++;
     } else {
         (*failed)++;
-        perror("shiftAND_errors test 6 failed!");
+        perror("shiftAND_errors_legacy test 6 failed!");
     }
 
     free(temp);
@@ -517,7 +652,7 @@ void test_shiftAND_errors(int* passed, int* failed) {
         (*passed)++;
     } else {
         (*failed)++;
-        perror("shiftAND_errors test 7 failed!");
+        perror("shiftAND_errors_legacy test 7 failed!");
     }
 
     free(temp);
@@ -533,7 +668,23 @@ void test_shiftAND_errors(int* passed, int* failed) {
         (*passed)++;
     } else {
         (*failed)++;
-        perror("shiftAND_errors test 8 failed!");
+        perror("shiftAND_errors_legacy test 8 failed!");
+    }
+
+    free(temp);
+    free(temp2);
+
+    temp = (uint32_t*) malloc(7 * sizeof(uint32_t));
+    u8_toucs(temp, 7, "rechts", -1);
+
+    temp2 = (uint32_t*) malloc(7 * sizeof(uint32_t));
+    u8_toucs(temp2, 7, "erchst", -1);
+
+    if (shiftAND_errors(temp, temp2, 6, 6) == 2) {
+        (*passed)++;
+    } else {
+        (*failed)++;
+        perror("shiftAND_errors_legacy test 9 failed!");
     }
 
     free(temp);

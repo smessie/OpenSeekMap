@@ -59,40 +59,77 @@ int shiftAND_errors(uint32_t* z, uint32_t* t, int length_z, int length_t) {
     int max_errors = 3;
     characteristic_vectors* cvs = calculate_characteristic_vectors(z, length_z);
 
-    // First calculate M_0 matrix, so without errors.
-    M* m = calculate_M(z, t, cvs, length_z, length_t);
-    for (int i = 0; i < max_errors; i++) {
-        if (check_for_match(m) == true) {
-            // Search string found with cost i.
-            free_characteristic_vectors(cvs);
-            free_M(m);
-            return i;
+    // Calculate M_0
+    int M_0[length_t][length_z];
+    for (int i = 0; i < length_t; ++i) {
+        for (int j = 0; j < length_z; ++j) {
+            M_0[i][j] = 0;
         }
-        // Now calculate matrix with one more error = cost +1
-        M* m_next = calculate_M_i(z, t, cvs, m, length_z, length_t);
-        free_M(m);
-        m = m_next;
+    }
+    if (z[0] == t[0]) {
+        M_0[0][0] = 1;
     }
 
-    if (check_for_match(m) == true) {
+    for (int i = 1; i < length_t; ++i) {
+        int* C_i_0 = C(cvs, t[i]);
+        for (int j = 1; j < length_z; j++) {
+            M_0[i][j] = M_0[i - 1][j - 1] & C_i_0[j];
+        }
+    }
+
+    int M_l_minus_1[length_t][length_z];
+    for (int i = 0; i < length_t; ++i) {
+        for (int j = 0; j < length_z; ++j) {
+            M_l_minus_1[i][j] = M_0[i][j];
+        }
+    }
+
+    for (int l = 0; l < max_errors; l++) {
+        // Check if we found a match in M_l => l errors.
+        if (M_l_minus_1[length_t - 1][length_z - 1] == 1) {
+            // Search string found with cost i.
+            free_characteristic_vectors(cvs);
+            return l;
+        }
+
+        // Now calculate matrix with one more error = cost +1
+        int M_l[length_t][length_z];
+
+        // First column.
+        M_l[0][0] = 1;
+        for (int j = 1; j < length_z; ++j) {
+            M_l[0][j] = M_l_minus_1[0][j - 1];
+        }
+
+        for (int i = 1; i < length_t; ++i) {
+            // For first letter of z = z_0; t_i equal to previous t in previous M_l by deleting letter in t.
+            M_l[i][0] = M_l_minus_1[i - 1][0];
+
+            int* C_i = C(cvs, t[i]);
+            for (int j = 1; j < length_z; ++j) {
+                // prev and current letter equal | normal error (different letter) | insert letter | delete letter | switch 2 letters
+                M_l[i][j] = (M_l[i - 1][j - 1] & C_i[j]) | M_l_minus_1[i - 1][j - 1] | M_l_minus_1[i][j - 1] |
+                            M_l_minus_1[i - 1][j] |
+                            ((C(cvs, t[i - 1])[j] & M_l[i - 1][j - 1]) & (C_i[j - 1] & M_l[i - 1][j - 1]));
+            }
+        }
+
+        for (int i = 0; i < length_t; ++i) {
+            for (int j = 0; j < length_z; ++j) {
+                M_l_minus_1[i][j] = M_l[i][j];
+            }
+        }
+    }
+
+    if (M_l_minus_1[length_t - 1][length_z - 1] == 1) {
         // Search string found with the maximal allowed cost.
         free_characteristic_vectors(cvs);
-        free_M(m);
         return max_errors;
     }
 
     // Cost higher than 3 not allowed so cost is infinity aka -1. Search string not found.
     free_characteristic_vectors(cvs);
-    free_M(m);
     return -1;
-}
-
-bool check_for_match(M* m) {
-    if (m->tail->value[m->m - 1] == 1) {
-        // There was a 1 on the last row and column so we found a match.
-        return true;
-    }
-    return false;
 }
 
 characteristic_vectors* calculate_characteristic_vectors(uint32_t* z, int size) {
@@ -161,6 +198,54 @@ void free_characteristic_vectors(characteristic_vectors* cvs) {
     }
     free(cvs->zeros);
     free(cvs);
+}
+
+
+/*
+ * ~~ LEGACY CODE ~~
+ * Following code is from before the rewrite of the algorithm implementation which uses too much mallocs and saving
+ * in structs causing the runtime to be dramatically longer.
+ */
+
+int shiftAND_errors_legacy(uint32_t* z, uint32_t* t, int length_z, int length_t) {
+    // Initialize variables
+    int max_errors = 3;
+    characteristic_vectors* cvs = calculate_characteristic_vectors(z, length_z);
+
+    // First calculate M_0 matrix, so without errors.
+    M* m = calculate_M(z, t, cvs, length_z, length_t);
+    for (int i = 0; i < max_errors; i++) {
+        if (check_for_match(m) == true) {
+            // Search string found with cost i.
+            free_characteristic_vectors(cvs);
+            free_M(m);
+            return i;
+        }
+        // Now calculate matrix with one more error = cost +1
+        M* m_next = calculate_M_i(z, t, cvs, m, length_z, length_t);
+        free_M(m);
+        m = m_next;
+    }
+
+    if (check_for_match(m) == true) {
+        // Search string found with the maximal allowed cost.
+        free_characteristic_vectors(cvs);
+        free_M(m);
+        return max_errors;
+    }
+
+    // Cost higher than 3 not allowed so cost is infinity aka -1. Search string not found.
+    free_characteristic_vectors(cvs);
+    free_M(m);
+    return -1;
+}
+
+bool check_for_match(M* m) {
+    if (m->tail->value[m->m - 1] == 1) {
+        // There was a 1 on the last row and column so we found a match.
+        return true;
+    }
+    return false;
 }
 
 M* calculate_M(uint32_t* z, uint32_t* t, characteristic_vectors* cvs, int length_z, int length_t) {
@@ -267,7 +352,6 @@ M* calculate_M_i(uint32_t* z, uint32_t* t, characteristic_vectors* cvs, M* M_pre
             temp_shifting_M_switch_char_column_minus_1[i] = column[i];
         }
         // This is where the magic happens :tada: *take 2*
-        // We are not going to OR with (1,0,...,0) as we already use a SHIFT that inserts a 1.
         shift(column, length_z, 0);
         AND(column, C(cvs, t[j]), column, length_z);
         shift(temp_shifting_M_minus_1_column, length_z, 0);
@@ -278,10 +362,12 @@ M* calculate_M_i(uint32_t* z, uint32_t* t, characteristic_vectors* cvs, M* M_pre
 
         // Switch 2 chars from position: ... OR ( (C[t[j-1]] & shift(M[][j-1])) & shift(C[t[j]] & M[][j-1]))
         shift(temp_shifting_M_switch_char_column_minus_1, length_z, 0);
-        AND(C(cvs, t[j-1]), temp_shifting_M_switch_char_column_minus_1, temp_shifting_M_switch_char_column_minus_1, length_z);
+        AND(C(cvs, t[j - 1]), temp_shifting_M_switch_char_column_minus_1, temp_shifting_M_switch_char_column_minus_1,
+            length_z);
         AND(C(cvs, t[j]), temp_M_switch_char_column_minus_1, temp_M_switch_char_column_minus_1, length_z);
         shift(temp_M_switch_char_column_minus_1, length_z, 0);
-        AND(temp_shifting_M_switch_char_column_minus_1, temp_M_switch_char_column_minus_1, temp_M_switch_char_column_minus_1, length_z);
+        AND(temp_shifting_M_switch_char_column_minus_1, temp_M_switch_char_column_minus_1,
+            temp_M_switch_char_column_minus_1, length_z);
         OR(temp_M_switch_char_column_minus_1, column, column, length_z);
 
         // Write back the resulting column to new alloc.
