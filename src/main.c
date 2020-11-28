@@ -4,6 +4,8 @@
 #include <getopt.h>
 #include <ctype.h>
 
+#include <time.h>
+
 #include "database.h"
 #include "query_handler.h"
 #include "algorithm.h"
@@ -12,19 +14,22 @@
 #include "strings/string_util.h"
 
 int main(int argc, char** argv) {
+    clock_t t = clock();
     // Validate function call
-    if (argc != 2 && argc != 4 && argc != 6) {
+    if (argc < 2 || argc > 6) {
         print_usage();
         return EXIT_FAILURE;
     }
 
     // Handle algorithm options.
     int argument_boost = 0;
+    int time_flag = 0;
     int algorithm = 0;
     int c;
     while (1) {
         struct option long_options[] = {
                 {"algorithm", required_argument, 0, 'a'},
+                {"time", no_argument, &time_flag, 1},
                 {0, 0, 0, 0}
         };
         int option_index = 0;
@@ -52,6 +57,9 @@ int main(int argc, char** argv) {
     if (algorithm < 0 || algorithm > 2) {
         print_usage();
         return EXIT_FAILURE;
+    }
+    if (time_flag == 1) {
+        argument_boost++;
     }
 
     // Read query's
@@ -115,6 +123,12 @@ int main(int argc, char** argv) {
     // End program
     free_query_collection(qc);
     free_database(database);
+
+    t = clock() - t;
+    if (time_flag == 1) {
+        printf("%f\n", (double) t / CLOCKS_PER_SEC);
+    }
+
     fclose(stdin);
     fclose(stdout);
     fclose(stderr);
