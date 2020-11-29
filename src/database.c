@@ -45,8 +45,8 @@ Database* load_database(char* path, int max) {
         char* name = strtok(NULL, "\t");
         int length = u8_strlen(name);
 
-        // If length is longer than longest query length + 3 add errors; entry will never be matched.
-        if (length > max + 3) {
+        // If length is longer than or equal to longest query length + 3 add errors; entry will never be matched.
+        if (length >= max + 3) {
             continue;
         }
 
